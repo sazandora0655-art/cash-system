@@ -286,7 +286,7 @@
     <div class="sec"><div class="k">日（台本の日付）</div><div class="seg" id="segDay"></div></div>
     <div class="sec" id="secReplay"><div class="k">開始時刻・速度（その時刻より後の約定は出ない）</div><div class="row">
       <input type="time" id="inT" value="09:00"> <span class="seg" id="segSpeed">
-      <button data-v="1">×1</button><button data-v="10">×10</button><button data-v="60">×60</button><button data-v="240">×240</button></span>
+      <button data-v="1">×1</button><button data-v="5">×5</button><button data-v="7">×7</button><button data-v="10">×10</button><button data-v="60">×60</button><button data-v="240">×240</button></span>
       <button class="seg-btn" id="btnPause" style="background:var(--bg2);border:1px solid var(--line2);color:var(--txt);border-radius:4px;padding:6px 10px;font-family:inherit;cursor:pointer">⏸ 一時停止</button>
     </div></div>
     <div class="sec"><div class="k">チャート枚数</div><div class="seg" id="segPanes">
@@ -659,7 +659,7 @@ function setupCfg(){ const sd=$('segDay'); sd.innerHTML='<button data-v="auto">A
   segSync(); }
 function closeCfg(){ $('cfg').classList.remove('open'); $('gearBtn').classList.remove('on'); }
 function resetSeen(){ seenEnter=new Set(); seenExit=new Set(); feed=[]; lastFeedMin=-1; lastFills=-1; lastRealized=null; lastDayId=''; lastPanelT=0; }
-const SPEEDS=[1,10,60,240,600];
+const SPEEDS=[1,5,7,10,60,240,600];
 document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT') return; const k=e.key.toLowerCase();
   if(k==='1'||k==='2'||k==='3'){ CFG.panes=+k; } else if(k==='0'){ CFG.panes='auto'; } else if(k==='r'){ CFG.panes='random'; }
   else if(k==='['||k===']'){ const cur=Clock.day().day; const nx=clamp(cur+(k===']'?1:-1),DAYS[0].day,DAYS[DAYS.length-1].day); CFG.day=nx; CFG.mode='replay'; Clock.init(); resetSeen(); }
