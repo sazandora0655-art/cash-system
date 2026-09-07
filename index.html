@@ -279,6 +279,7 @@
   <div class="modal">
     <h2>CASH SYSTEM · 裏設定</h2>
     <div id="status" style="font-size:11px;color:var(--amber2);margin:-6px 0 12px;letter-spacing:.06em"></div>
+    <div class="sec"><div class="k">アカウント</div><div class="seg" id="segAcct"></div></div>
     <div class="sec"><div class="k">時刻モード（日や時刻を選ぶと自動でREPLAYになり、その時刻から進む。LIVE＝今日・実時刻）</div><div class="seg" id="segMode">
       <button data-v="live">LIVE（実時刻）</button><button data-v="replay">REPLAY（仮想時刻）</button></div></div>
     <div class="sec"><div class="k">日（台本の日付）</div><div class="seg" id="segDay"></div></div>
@@ -309,9 +310,22 @@
 <script>
 'use strict';
 /* ═══════════════════════ 0. 設定 ═══════════════════════ */
-const DAYS = (window.EVE_DAYS||[]).slice().sort((a,b)=>a.day-b.day);
+/* ★アカウントは2本立て（2026-09-07 追加）
+     plan = 100万丸投げ（企画・@yuji_eve_life の台本と同じ数字）
+     main = メイン口座（同じ相場・同じ勝ち負けのまま金額だけ218.09倍）
+   どちらも build_data.py が作った data.js が正。画面側では1円も作らない。 */
+const ACCOUNTS = (window.EVE_ACCOUNTS && window.EVE_ACCOUNTS.length)
+  ? window.EVE_ACCOUNTS
+  : [{id:'plan',label:'100万丸投げ（企画）',note:'',days:(window.EVE_DAYS||[])}];
+let ACCT = ACCOUNTS[0];
+let DAYS = [];
+function useAccount(){
+  ACCT = ACCOUNTS.find(a=>a.id===CFG.acct) || ACCOUNTS[0];
+  DAYS = (ACCT.days||[]).slice().sort((a,b)=>a.day-b.day);
+  return ACCT;
+}
 const LS='cash_cfg';
-const DEF={mode:'live',day:'auto',t:'09:00',speed:1,panes:'auto',layout:'focus',labels:'index',cw:7};
+const DEF={acct:'plan',mode:'live',day:'auto',t:'09:00',speed:1,panes:'auto',layout:'focus',labels:'index',cw:7};
 let CFG=Object.assign({},DEF);
 try{Object.assign(CFG,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
 (function(){ const q=new URLSearchParams(location.search);
@@ -319,7 +333,8 @@ try{Object.assign(CFG,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
   if(q.has('day')&&q.get('day')!=='auto') CFG.day=+q.get('day');
 })();
 function normalize(){ if(CFG.day!=='auto') CFG.mode='replay'; if(CFG.mode==='live') CFG.day='auto';
-  if(CFG.labels!=='none'&&CFG.labels!=='index') CFG.labels='index'; }   // 旧 redact/abstract からの移行
+  if(CFG.labels!=='none'&&CFG.labels!=='index') CFG.labels='index';   // 旧 redact/abstract からの移行
+  if(!ACCOUNTS.some(a=>a.id===CFG.acct)) CFG.acct=ACCOUNTS[0].id; }
 normalize();
 function saveCfg(){ normalize(); try{localStorage.setItem(LS,JSON.stringify(CFG))}catch(e){} }
 
@@ -365,7 +380,7 @@ function volMul(day,pane,i){ // 分iのボラ倍率。取引の前後で大き�
   let v=1; const m=i/60;
   v+= .25*Math.exp(-Math.pow((m-9.3)/1.4,2)) + .45*Math.exp(-Math.pow((m-16.2)/1.6,2)) + .6*Math.exp(-Math.pow((m-22.3)/1.8,2)); // 東京・欧州・NYの山
   for(const t of day.trades){ const own=t.pane===pane; const a=t.h-3/60, b=t.x+2/60;
-    if(m>=a-6/60&&m<=b+6/60){ let w=1; if(m<a) w=smooth((m-(a-6/60))/(6/60)); else if(m>b) w=1-smooth((m-b)/(6/60)); v+= (own?1.6:.3)*w*(1+Math.min(1,Math.abs(t.pnl)/4000)*.6); } }
+    if(m>=a-6/60&&m<=b+6/60){ let w=1; if(m<a) w=smooth((m-(a-6/60))/(6/60)); else if(m>b) w=1-smooth((m-b)/(6/60)); v+= (own?1.6:.3)*w*(1+Math.min(1,Math.abs(t.pnl)/(day.cap*0.65))*.6); } }   // ★Rで正規化＝口座が変わっても同じ形
   return day.closed?0.35+v*0.3:v;
 }
 function genSeries(day,pane){
@@ -378,7 +393,9 @@ function genSeries(day,pane){
   for(const t of day.trades.filter(t=>t.pane===pane)){
     const ih=clamp(Math.floor(t.h*60),1,N-2), ix=clamp(Math.floor(t.x*60),ih+1,N-1);
     const dir=(t.side==='B'?1:-1)*(t.pnl>=0?1:-1);
-    const D=dir*base.p*0.0008*Math.pow(Math.abs(t.pnl)/3000,0.72);
+    /* ★損益そのものではなく「損失上限の何倍か（R）」で値動きの大きさを決める。
+       こうしないとメイン口座（218倍）でチャートが暴れて別物になる。 */
+    const D=dir*base.p*0.0008*Math.pow(2*Math.abs(t.pnl)/day.cap,0.72);
     const ex=c[ix]-c[ih], add=D-ex; const ph=r()*Math.PI*2;
     for(let i=ih+1;i<N;i++){ if(i<=ix){ const u=(i-ih)/(ix-ih); c[i]+=add*(smooth(u)+.28*Math.sin(Math.PI*u)*Math.sin(2*Math.PI*u+ph)*(1-u)); } else c[i]+=add; }
   }
@@ -399,7 +416,7 @@ function accountAt(day,hour){
   let floating=0; const openInfo=[];
   for(const t of open){ const s=genSeries(day,t.pane); const ih=clamp(Math.floor(t.h*60),1,s.N-2), ix=clamp(Math.floor(t.x*60),ih+1,s.N-1);
     const ph=s.c[ih], px=s.c[ix], lp=livePrice(s,hour).p; const den=(px-ph)||1e-9; let f=t.pnl*(lp-ph)/den;
-    f=clamp(f,-day.cap,t.pnl>=0?Math.abs(t.pnl)*1.5+500:Math.abs(t.pnl)*.5+300); floating+=f; openInfo.push({t,f,ph,lp}); }
+    f=clamp(f,-day.cap,t.pnl>=0?Math.abs(t.pnl)*1.5+day.cap*.08:Math.abs(t.pnl)*.5+day.cap*.05); floating+=f; openInfo.push({t,f,ph,lp}); }
   return {realized,floating,equity:realized+floating,wins,losses,fills,open:openInfo,net:realized-day.balOpen};
 }
 
@@ -532,7 +549,7 @@ const eqHist=[];
 function tickPanels(day,hour,acc){
   // header
   const h=Math.floor(hour), m=Math.floor(hour*60)%60, s=Math.floor(hour*3600)%60;
-  $('status').textContent=(day.closed?'休場（'+day.date+'）・前営業日 '+day.day+'日目の終値で停止':day.day+'日目（'+day.date+'）'+(day.plan?'・残高計画から生成':''))+' · '+pad(h)+':'+pad(m)+':'+pad(s)+' · '+(CFG.mode==='replay'?('REPLAY ×'+CFG.speed+(Clock.paused?' ⏸':'')):'LIVE');
+  $('status').textContent=ACCT.label+' · '+(day.closed?'休場（'+day.date+'）・前営業日 '+day.day+'日目の終値で停止':day.day+'日目（'+day.date+'）'+(day.plan?'・残高計画から生成':''))+' · '+pad(h)+':'+pad(m)+':'+pad(s)+' · '+(CFG.mode==='replay'?('REPLAY ×'+CFG.speed+(Clock.paused?' ⏸':'')):'LIVE');
   $('liveTag').classList.toggle('replay',CFG.mode==='replay');
   // wallet
   const be=$('bal'); be.innerHTML='<small>¥</small>'+Math.round(acc.realized).toLocaleString('ja-JP');
@@ -584,7 +601,7 @@ function drawEquity(day,hour,acc){ const cv=$('eq'); const dpr=Math.min(2,device
   if(cv.width!==W*dpr||cv.height!==H*dpr){cv.width=W*dpr;cv.height=H*dpr;} const g=cv.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,W,H);
   // 0時〜24時の実現残高の階段 + 現在の含み点
   const pts=[]; let b=day.balOpen; pts.push([0,b]); for(const t of day.trades){ if(t.x>hour)break; pts.push([t.x,b]); b+=t.pnl; pts.push([t.x,b]); } pts.push([hour,b]); if(acc.open.length) pts.push([hour,acc.equity]);
-  const allB=day.trades.reduce((a,t)=>{a.push(a[a.length-1]+t.pnl);return a;},[day.balOpen]); const lo=Math.min(...allB,acc.equity)-1500, hi=Math.max(...allB,acc.equity)+1500;
+  const allB=day.trades.reduce((a,t)=>{a.push(a[a.length-1]+t.pnl);return a;},[day.balOpen]); const pad2=day.cap*0.25; const lo=Math.min(...allB,acc.equity)-pad2, hi=Math.max(...allB,acc.equity)+pad2;
   const x=t=>t/24*W, y=v=>H-4-(v-lo)/(hi-lo)*(H-8);
   g.strokeStyle='rgba(255,255,255,.08)'; g.setLineDash([2,3]); g.beginPath(); g.moveTo(0,y(day.balOpen)+.5); g.lineTo(W,y(day.balOpen)+.5); g.stroke(); g.setLineDash([]);
   const up=b>=day.balOpen; const col=up?'#3ddc97':'#ff5f5f'; const grd=g.createLinearGradient(0,0,0,H); grd.addColorStop(0,up?'rgba(61,220,151,.28)':'rgba(255,95,95,.28)'); grd.addColorStop(1,'rgba(0,0,0,0)');
@@ -659,17 +676,24 @@ function updateTabsHot(acc){ document.querySelectorAll('.mtabs button').forEach(
 
 /* ═══════════════════════ 9. 設定UI・キー ═══════════════════════ */
 function segInit(id,key,cb){ const el=$(id); el.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{ CFG[key]=isNaN(+b.dataset.v)||b.dataset.v==='auto'||b.dataset.v==='random'?b.dataset.v:+b.dataset.v; if(key==='panes'&&(b.dataset.v==='auto'||b.dataset.v==='random')) CFG[key]=b.dataset.v; saveCfg(); segSync(); cb&&cb(); }; }); }
-function segSync(){ for(const [id,key] of [['segMode','mode'],['segSpeed','speed'],['segPanes','panes'],['segLayout','layout'],['segLabels','labels'],['segCw','cw']]) $(id).querySelectorAll('button').forEach(b=>b.classList.toggle('on',String(b.dataset.v)===String(CFG[key])));
+function segSync(){ for(const [id,key] of [['segAcct','acct'],['segMode','mode'],['segSpeed','speed'],['segPanes','panes'],['segLayout','layout'],['segLabels','labels'],['segCw','cw']]) $(id).querySelectorAll('button').forEach(b=>b.classList.toggle('on',String(b.dataset.v)===String(CFG[key])));
   $('segDay').querySelectorAll('button').forEach(b=>b.classList.toggle('on',String(b.dataset.v)===String(CFG.day)));
   $('secReplay').style.opacity=CFG.mode==='replay'?1:.4; $('btnPause').textContent=Clock.paused?'▶ 再開':'⏸ 一時停止'; }
-function setupCfg(){ const sd=$('segDay'); sd.innerHTML='<button data-v="auto">AUTO（今日）</button>'+DAYS.map(d=>`<button data-v="${d.day}">${d.day}日目<br><span style="font-size:9px;color:var(--dim)">${d.date.slice(5)}</span></button>`).join('');
+function setupCfg(){
+  $('segAcct').innerHTML=ACCOUNTS.map(a=>`<button data-v="${a.id}">${a.label}</button>`).join('');
+  segInit('segAcct','acct',()=>{ switchAccount(); });
+  const sd=$('segDay'); sd.innerHTML='<button data-v="auto">AUTO（今日）</button>'+DAYS.map(d=>`<button data-v="${d.day}">${d.day}日目<br><span style="font-size:9px;color:var(--dim)">${d.date.slice(5)}</span></button>`).join('');
   segInit('segMode','mode',()=>{ if(CFG.mode==='live') CFG.day='auto'; saveCfg(); Clock.init(); resetSeen(); }); segInit('segSpeed','speed'); segInit('segPanes','panes'); segInit('segLayout','layout',()=>{ lastN=0; }); segInit('segLabels','labels',buildTape); segInit('segCw','cw');
   segInit('segDay','day',()=>{ CFG.mode=(CFG.day==='auto')?'live':'replay'; saveCfg(); Clock.init(); resetSeen(); });
+  $('segDay').querySelectorAll('button').forEach(b=>b.classList.toggle('on',String(b.dataset.v)===String(CFG.day)));
   $('inT').value=CFG.t; $('inT').onchange=e=>{ CFG.t=e.target.value; CFG.mode='replay'; if(CFG.day==='auto') CFG.day=Clock.day().day; saveCfg(); Clock.init(); resetSeen(); };
   $('btnPause').onclick=()=>{ Clock.paused=!Clock.paused; segSync(); };
   $('gearBtn').onclick=()=>{ $('cfg').classList.add('open'); $('gearBtn').classList.add('on'); segSync(); }; $('cfgClose').onclick=closeCfg; $('cfg').onclick=e=>{ if(e.target.id==='cfg') closeCfg(); };
   segSync(); }
 function closeCfg(){ $('cfg').classList.remove('open'); $('gearBtn').classList.remove('on'); }
+/* 口座を入れ替える。日付の並びは両口座で同じなので、見ている日はそのまま引き継ぐ。
+   休場日のキャッシュだけは前の口座の残高を持っているので必ず捨てる。 */
+function switchAccount(){ useAccount(); Clock._closed=null; Clock.syncDay(); resetSeen(); }
 function resetSeen(){ seenEnter=new Set(); seenExit=new Set(); feed=[]; lastFeedMin=-1; lastFills=-1; lastRealized=null; lastDayId=''; lastPanelT=0; }
 const SPEEDS=[1,5,7,10,60,240,600];
 document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT') return; const k=e.key.toLowerCase();
@@ -690,6 +714,7 @@ function loop(){ Clock.tick(); const day=Clock.day(); const hour=Clock.hour(); c
   fireEvents(day,hour);
   const now=performance.now(); if(now-lastPanelT>200){ lastPanelT=now; tickPanels(day,hour,acc); updateTabsHot(acc); }
   requestAnimationFrame(loop); }
+useAccount();
 if(!DAYS.length){ document.body.innerHTML='<div style="padding:40px;color:#ff5f5f;font-family:monospace">data.js がありません。python build_data.py を実行してください。</div>'; }
 else { Clock.init(); setupCfg(); buildTape(); if(CFG.mode==='live'){ /* LIVEは今日の日付に同期 */ } loop(); }
 document.addEventListener('visibilitychange',()=>{ Clock.last=performance.now(); });
