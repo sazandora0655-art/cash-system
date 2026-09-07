@@ -111,6 +111,7 @@
   .side.B{background:var(--cyan);color:#071018} .side.S{background:var(--mag);color:#fff}
   .log .empty{padding:18px 10px;color:var(--dim2);font-size:10px;letter-spacing:.12em;text-align:center}
   .log tr.open td{color:var(--amber2)}
+  .log .idx{color:var(--dim2)}
   .log tr.open .pnl{animation:blink 1.4s infinite}
 
   /* ── charts ── */
@@ -126,11 +127,9 @@
   .pane canvas{display:block;width:100%;flex:1;min-height:0}
   .legend{position:absolute;left:8px;top:6px;z-index:3;font-size:11px;color:var(--tvtxt);line-height:1.6;pointer-events:none}
   .legend .row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-  .legend .sym{display:inline-block;height:13px;width:74px;background:#000;border-radius:2px;vertical-align:middle;position:relative;top:-1px}
-  .legend .sym.txt{background:transparent;width:auto;font-weight:700;color:#fff;letter-spacing:.06em}
+  .legend .sym{font-weight:700;color:#fff;letter-spacing:.06em}
   .legend .tf{color:var(--tvtxt)} .legend .ohlc{color:var(--tvdim);font-size:10px}
-  .legend .ohlc i{display:inline-block;width:38px;height:9px;background:#000;border-radius:1px;vertical-align:middle;margin:0 5px 0 1px}
-  .legend .ohlc.txt i{display:none} .legend .ohlc.txt b{color:var(--tvtxt);font-weight:500;margin-right:6px}
+  .legend .ohlc b{color:var(--tvtxt);font-weight:500;margin-right:6px}
   .legend .ind{color:var(--tvdim);font-size:10px} .legend .ind b{color:var(--cyan);font-weight:600}
   .legend .ind .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--cyan);margin-right:5px;vertical-align:middle}
   .pane .badge{position:absolute;right:8px;top:6px;z-index:3;font-size:9px;letter-spacing:.14em;color:var(--tvdim)}
@@ -151,8 +150,7 @@
   #tape .in{display:flex;gap:26px;white-space:nowrap;animation:tape 60s linear infinite;padding-left:100%}
   @keyframes tape{to{transform:translateX(-100%)}}
   #tape .it{display:flex;align-items:center;gap:7px}
-  #tape .it .sym{display:inline-block;width:40px;height:9px;background:#000;border-radius:1px}
-  #tape .it .sym.txt{background:transparent;width:auto;height:auto;color:var(--txt);font-weight:600;letter-spacing:.06em}
+  #tape .it .sym{color:var(--txt);font-weight:600;letter-spacing:.06em}
   #tape .it .p{color:var(--tvdim)}
 
   /* ── mobile tabs ── */
@@ -293,8 +291,8 @@
       <button data-v="auto">AUTO（その日の枚数）</button><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="random">RANDOM（数分ごとに変わる）</button></div></div>
     <div class="sec"><div class="k">3枚のときの並び</div><div class="seg" id="segLayout">
       <button data-v="focus">1大＋2小</button><button data-v="cols">3列</button></div></div>
-    <div class="sec"><div class="k">銘柄・レートの表示</div><div class="seg" id="segLabels">
-      <button data-v="redact">黒塗り（標準・リプレイと同じ作法）</button><button data-v="abstract">抽象ラベル（PAIR-01 / 架空の値）</button></div></div>
+    <div class="sec"><div class="k">チャートの数値（銘柄名・レートは出さない）</div><div class="seg" id="segLabels">
+      <button data-v="index">謎の数字（既定・独自インデックス）</button><button data-v="none">何も出さない</button></div></div>
     <div class="sec"><div class="k">ローソクの太さ</div><div class="seg" id="segCw">
       <button data-v="5">細</button><button data-v="7">標準</button><button data-v="10">太</button></div></div>
     <div class="note">
@@ -313,14 +311,15 @@
 /* ═══════════════════════ 0. 設定 ═══════════════════════ */
 const DAYS = (window.EVE_DAYS||[]).slice().sort((a,b)=>a.day-b.day);
 const LS='cash_cfg';
-const DEF={mode:'live',day:'auto',t:'09:00',speed:1,panes:'auto',layout:'focus',labels:'redact',cw:7};
+const DEF={mode:'live',day:'auto',t:'09:00',speed:1,panes:'auto',layout:'focus',labels:'index',cw:7};
 let CFG=Object.assign({},DEF);
 try{Object.assign(CFG,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
 (function(){ const q=new URLSearchParams(location.search);
   for(const k of Object.keys(DEF)){ if(q.has(k)){ let v=q.get(k); if(k==='speed'||k==='cw') v=+v; CFG[k]=v; } }
   if(q.has('day')&&q.get('day')!=='auto') CFG.day=+q.get('day');
 })();
-function normalize(){ if(CFG.day!=='auto') CFG.mode='replay'; if(CFG.mode==='live') CFG.day='auto'; }
+function normalize(){ if(CFG.day!=='auto') CFG.mode='replay'; if(CFG.mode==='live') CFG.day='auto';
+  if(CFG.labels!=='none'&&CFG.labels!=='index') CFG.labels='index'; }   // 旧 redact/abstract からの移行
 normalize();
 function saveCfg(){ normalize(); try{localStorage.setItem(LS,JSON.stringify(CFG))}catch(e){} }
 
@@ -359,7 +358,8 @@ const Clock={ vt:9, paused:false, last:performance.now(), dayIdx:0,
 
 /* ═══════════════════════ 3. 相場エンジン（1分足・決定論） ═══════════════════════ */
 // 抽象ベース価格（実銘柄は示さない）。黒塗りモードでは値は一切見えない
-const BASES=[{p:1.08432,dec:5},{p:157.842,dec:3},{p:2384.6,dec:1},{p:0.65718,dec:5},{p:19834.2,dec:1}];
+// 抽象ベース。i0＝画面に出す独自インデックスの基準値（実在のレートとは無関係の謎の数字）
+const BASES=[{p:1.08432,i0:1000},{p:157.842,i0:2400},{p:2384.6,i0:860},{p:0.65718,i0:3200},{p:19834.2,i0:1450}];
 const SERIES=new Map();
 function volMul(day,pane,i){ // 分iのボラ倍率。取引の前後で大きく動く（同じ板は強く、他の板も少し）
   let v=1; const m=i/60;
@@ -419,13 +419,16 @@ function buildPanes(n){
     CH.appendChild(el); panes.push({el,cv:el.querySelector('canvas'),ctx:el.querySelector('canvas').getContext('2d'),idx:i,lastTrade:null,live:{i:-1,hi:0,lo:0}}); }
   buildTabs(n);
 }
-function fmtP(base,p){ return p.toFixed(base.dec); }
+/* ★実レートは絶対に出さない。基準からの変化率だけを独自インデックスに写して表示する。
+   0.01%の動き＝1.00ポイント。どの銘柄かは誰にも分からない数字になる。 */
+function fmtP(base,p){ return (base.i0+(p/base.p-1)*10000).toFixed(2); }
+function fmtD(base,d){ return ((d/base.p)*10000).toFixed(2); }   // 変化ぶん（差分）
 function drawPane(P,day,hour,acc){
   const s=genSeries(day,P.idx); const cv=P.cv; const dpr=Math.min(2,window.devicePixelRatio||1);
   const W=cv.clientWidth,H=cv.clientHeight; if(W<10||H<10) return;
   if(cv.width!==Math.round(W*dpr)||cv.height!==Math.round(H*dpr)){ cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); }
   const g=P.ctx; g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,W,H);
-  const redact=CFG.labels!=='abstract'; const axW=redact?58:(s.base.dec>=3?70:62), tAx=20, topPad=40;
+  const showNums=CFG.labels!=='none'; const axW=showNums?64:24, tAx=12, topPad=40;
   const plotW=W-axW, plotH=H-tAx, cw=+CFG.cw||7, gap=Math.max(1,Math.round(cw*.3));
   const lp=livePrice(s,hour); const cur=lp.i; const rightBlank=Math.round(plotW*.12/(cw+gap));
   const nVis=Math.max(20,Math.floor(plotW/(cw+gap))-rightBlank); const i0=Math.max(0,cur-nVis+1);
@@ -464,8 +467,8 @@ function drawPane(P,day,hour,acc){
     g.setLineDash([4,3]); g.strokeStyle='rgba(160,165,180,.6)'; g.beginPath(); g.moveTo(xa,y(z.ent)+.5); g.lineTo(xb,y(z.ent)+.5); g.stroke(); g.setLineDash([]);
     // TP/SL タグ
     g.font='9px '+getComputedStyle(document.body).fontFamily; g.textBaseline='middle';
-    tag(g,xb+2,y(z.tp),'TP',redact?null:fmtP(s.base,z.tp),`rgb(${col})`,z.t.side==='B'?'#071018':'#fff');
-    tag(g,xb+2,y(z.sl),'SL',redact?null:fmtP(s.base,z.sl),'#ef5350','#fff');
+    tag(g,xb+2,y(z.tp),'TP',showNums?fmtP(s.base,z.tp):null,`rgb(${col})`,z.t.side==='B'?'#071018':'#fff');
+    tag(g,xb+2,y(z.sl),'SL',showNums?fmtP(s.base,z.sl):null,'#ef5350','#fff');
     // シグナルの足を発光
     g.fillStyle=`rgba(${col},.12)`; g.fillRect(x(z.ih)-gap/2,0,cw+gap,plotH);
   }
@@ -491,22 +494,26 @@ function drawPane(P,day,hour,acc){
   g.fillStyle='#131722'; g.fillRect(plotW,0,axW,H); g.strokeStyle='rgba(255,255,255,.08)'; g.beginPath(); g.moveTo(plotW+.5,0); g.lineTo(plotW+.5,plotH); g.stroke();
   g.textAlign='left'; g.font='10px '+getComputedStyle(document.body).fontFamily;
   for(let k=0;k<=nG;k++){ const yy=topPad+(plotH-topPad-6)*k/nG; const pv=hi-(hi-lo)*k/nG;
-    if(redact){ const r=rng(hash(day.date+'|ax|'+P.idx+'|'+k)); g.fillStyle='#000'; rr(g,plotW+6,yy-6,axW-14-r()*10,12,2); g.fill(); }
-    else { g.fillStyle='#8a8f9e'; g.fillText(fmtP(s.base,pv),plotW+6,yy); } }
-  const lc=(lp.p>=s.o[cur])?'#26a69a':'#ef5350'; g.fillStyle=lc; rr(g,plotW+1,yl-9,axW-2,18,2); g.fill();
-  if(redact){ g.fillStyle='#000'; rr(g,plotW+6,yl-5,axW-12,10,1); g.fill(); } else { g.fillStyle='#fff'; g.fillText(fmtP(s.base,lp.p),plotW+6,yl); }
+    if(showNums){ g.fillStyle='#8a8f9e'; g.fillText(fmtP(s.base,pv),plotW+6,yy); }
+    else { g.strokeStyle='rgba(255,255,255,.20)'; g.lineWidth=1; g.beginPath(); g.moveTo(plotW+2,yy+.5); g.lineTo(plotW+9,yy+.5); g.stroke(); } }
+  const lc=(lp.p>=s.o[cur])?'#26a69a':'#ef5350'; g.fillStyle=lc;
+  if(showNums){ rr(g,plotW+1,yl-9,axW-2,18,2); g.fill(); g.fillStyle='#fff'; g.fillText(fmtP(s.base,lp.p),plotW+6,yl); }
+  else { rr(g,plotW+1,yl-4,axW-2,8,2); g.fill(); }
   // open P/L on chart (含み)
   if(openT){ const f=openT.f; const txt=(f>=0?'+':'−')+'¥'+Math.abs(Math.round(f)).toLocaleString('ja-JP'); g.font='bold 13px '+getComputedStyle(document.body).fontFamily; g.textAlign='right';
     const w=g.measureText(txt).width+18; g.fillStyle='rgba(8,11,17,.9)'; rr(g,plotW-w-8,topPad+2,w,24,4); g.fill(); g.strokeStyle=f>=0?'rgba(61,220,151,.6)':'rgba(255,95,95,.6)'; g.stroke();
     g.fillStyle=f>=0?'#3ddc97':'#ff5f5f'; g.fillText(txt,plotW-17,topPad+14); g.font='8px '+getComputedStyle(document.body).fontFamily; g.fillStyle='#8a8f9e'; g.fillText('OPEN P/L',plotW-17,topPad+31); }
-  // time axis
-  g.fillStyle='#131722'; g.fillRect(0,plotH,W,tAx); g.fillStyle='#6b7080'; g.font='9.5px '+getComputedStyle(document.body).fontFamily; g.textAlign='center';
-  for(let i=i0;i<=cur+rightBlank;i++){ if(i%30===0&&i<1440) g.fillText(hhmm(i/60),x(i)+cw/2,plotH+10); }
+  // time axis ★時刻は一切出さない（2026-09-07 本人指示）。目盛りの短い線だけ残す
+  g.fillStyle='#131722'; g.fillRect(0,plotH,W,tAx);
+  g.strokeStyle='rgba(255,255,255,.20)'; g.lineWidth=1;
+  for(let i=i0;i<=cur+rightBlank;i++){ if(i%30===0&&i<1440){ const xx=Math.round(x(i)+cw/2)+.5;
+    g.beginPath(); g.moveTo(xx,plotH+2); g.lineTo(xx,plotH+7); g.stroke(); } }
   // legend text
   const leg=P.el.querySelector('.legend'); const sym=leg.querySelector('.sym'), oh=leg.querySelector('.ohlc');
-  if(redact){ sym.className='sym'; sym.textContent=''; oh.className='ohlc'; oh.innerHTML='O<i></i>H<i></i>L<i></i>C<i></i>'; }
-  else { sym.className='sym txt'; sym.textContent='PAIR-'+pad(((P.idx+day.day)%5)+1); oh.className='ohlc txt';
-    const ch=lp.p-s.o[cur]; oh.innerHTML=`O<b>${fmtP(s.base,s.o[cur])}</b>H<b>${fmtP(s.base,P.live.hi)}</b>L<b>${fmtP(s.base,P.live.lo)}</b>C<b style="color:${lc}">${fmtP(s.base,lp.p)} ${(ch>=0?'+':'')+fmtP(s.base,ch)}</b>`; }
+  sym.textContent='PAIR-'+pad(((P.idx+day.day)%5)+1);
+  if(showNums){ const ch=lp.p-s.o[cur];
+    oh.innerHTML=`O<b>${fmtP(s.base,s.o[cur])}</b>H<b>${fmtP(s.base,P.live.hi)}</b>L<b>${fmtP(s.base,P.live.lo)}</b>C<b style="color:${lc}">${fmtP(s.base,lp.p)} ${(ch>=0?'+':'')+fmtD(s.base,ch)}</b>`; }
+  else oh.innerHTML='';
   // hot state
   P.el.classList.toggle('hot',!!openT&&openT.t.side==='B'); P.el.classList.toggle('hotS',!!openT&&openT.t.side==='S');
 }
@@ -514,8 +521,9 @@ function rr(g,x,y,w,h,r){ g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,
 function chip(g,xc,yy,txt,bg,fg,dir){ const w=g.measureText(txt).width+12,h=15; const yb=dir==='up'?yy+3:yy-3-h;
   g.fillStyle=bg; rr(g,xc-w/2,yb,w,h,2); g.fill(); g.beginPath(); if(dir==='up'){ g.moveTo(xc-4,yb+.5); g.lineTo(xc+4,yb+.5); g.lineTo(xc,yb-5);} else { g.moveTo(xc-4,yb+h-.5); g.lineTo(xc+4,yb+h-.5); g.lineTo(xc,yb+h+5);} g.closePath(); g.fill();
   g.shadowColor=bg; g.shadowBlur=10; g.fillRect(xc-w/2,yb,w,h); g.shadowBlur=0; g.fillStyle=fg; g.fillText(txt,xc,yb+h/2+.5); }
-function tag(g,x,yy,k,v,bg,fg){ const txt=v?k+'  '+v:k; const w=g.measureText(txt).width+(v?10:26),h=12; g.fillStyle=bg; rr(g,x,yy-h/2,w,h,2); g.fill();
-  g.fillStyle=fg; g.textAlign='left'; g.fillText(k,x+4,yy+.5); if(v) g.fillText(v,x+4+g.measureText(k+'  ').width,yy+.5); else { g.fillStyle='#000'; rr(g,x+4+g.measureText(k+' ').width,yy-4,w-8-g.measureText(k+' ').width,8,1); g.fill(); } g.textAlign='center'; }
+function tag(g,x,yy,k,v,bg,fg){ const txt=v?k+'  '+v:k; const w=g.measureText(txt).width+10,h=12;
+  g.fillStyle=bg; rr(g,x,yy-h/2,w,h,2); g.fill();
+  g.fillStyle=fg; g.textAlign='left'; g.fillText(txt,x+5,yy+.5); g.textAlign='center'; }
 
 /* ═══════════════════════ 6. パネル更新 ═══════════════════════ */
 const $=id=>document.getElementById(id);
@@ -541,8 +549,9 @@ function tickPanels(day,hour,acc){
   // log
   if(lastFills!==acc.fills.length||lastOpenKeys!==acc.open.map(o=>o.t.h).join(',')||lastDayId!==day.id){
     const rows=[]; const opens=acc.open.slice().reverse(), fills=acc.fills.slice().reverse();
-    for(const o of opens) rows.push(`<tr class="open"><td class="num">${hhmm(o.t.h)}</td><td><span class="side ${o.t.side}">${o.t.side==='B'?'BUY':'SELL'}</span></td><td>#${o.t.pane+1}</td><td class="num pnl" style="text-align:right">OPEN</td></tr>`);
-    fills.forEach((t,k)=>rows.push(`<tr class="${k===0&&lastFills<acc.fills.length&&lastDayId===day.id?'new':''}"><td class="num">${hhmm(t.x)}</td><td><span class="side ${t.side}">${t.side==='B'?'BUY':'SELL'}</span></td><td>#${t.pane+1}</td><td class="num ${t.pnl>=0?'pos':'neg'}" style="text-align:right">${yenS(t.pnl)}</td></tr>`));
+    // ★時刻は出さない（2026-09-07 本人指示）。左端は「本日の何回目か」
+    for(const o of opens) rows.push(`<tr class="open"><td class="num idx">--</td><td><span class="side ${o.t.side}">${o.t.side==='B'?'BUY':'SELL'}</span></td><td>CH${o.t.pane+1}</td><td class="num pnl" style="text-align:right">OPEN</td></tr>`);
+    fills.forEach((t,k)=>rows.push(`<tr class="${k===0&&lastFills<acc.fills.length&&lastDayId===day.id?'new':''}"><td class="num idx">${pad(acc.fills.length-k)}</td><td><span class="side ${t.side}">${t.side==='B'?'BUY':'SELL'}</span></td><td>CH${t.pane+1}</td><td class="num ${t.pnl>=0?'pos':'neg'}" style="text-align:right">${yenS(t.pnl)}</td></tr>`));
     $('logBody').innerHTML=rows.length?'<table>'+rows.join('')+'</table>':'<div class="empty">NO FILLS YET · 約定待ち</div>';
     $('logtag').textContent=acc.fills.length+' FILLS';
     lastFills=acc.fills.length; lastOpenKeys=acc.open.map(o=>o.t.h).join(','); lastDayId=day.id;
@@ -550,8 +559,8 @@ function tickPanels(day,hour,acc){
   // AI core
   const next=day.trades.find(t=>t.h>hour); const toNext=next?(next.h-hour)*60:999; const op=acc.open[0];
   let st='SCANNING',cls='scan',sub='条件に合う場面を待っています',pct=28+Math.sin(hour*97)*6;
-  if(op){ const prog=clamp((hour-op.t.h)/(op.t.x-op.t.h),0,1); if(prog>.85){st='EXITING';cls='exit';sub='決済条件に到達 · ポジションを閉じます';pct=92;} else {st='HOLDING';cls='hold';sub=`保有中 · ${op.t.side==='B'?'BUY':'SELL'} #${op.t.pane+1} · 損切り上限 ${yen(day.cap)}`;pct=55+prog*35;} }
-  else if(toNext<2.5){ st='SIGNAL';cls='sig';sub=`条件が揃いつつあります · #${next.pane+1}`;pct=60+(2.5-toNext)*12; }
+  if(op){ const prog=clamp((hour-op.t.h)/(op.t.x-op.t.h),0,1); if(prog>.85){st='EXITING';cls='exit';sub='決済条件に到達 · ポジションを閉じます';pct=92;} else {st='HOLDING';cls='hold';sub=`保有中 · ${op.t.side==='B'?'BUY':'SELL'} CH${op.t.pane+1} · 損切り上限 ${yen(day.cap)}`;pct=55+prog*35;} }
+  else if(toNext<2.5){ st='SIGNAL';cls='sig';sub=`条件が揃いつつあります · CH${next.pane+1}`;pct=60+(2.5-toNext)*12; }
   else if(next){ sub='条件に合う場面を待っています · 監視 '+day.panes+'板'; }
   else if(day.closed){ st='STANDBY';cls='scan';sub='休場 · 監視のみ'; pct=10; }
   else if(hour>=day.dayEnd){ st='STANDBY';cls='scan';sub='本日の取引を終了 · 監視は継続'; pct=12; }
@@ -566,10 +575,11 @@ function tickPanels(day,hour,acc){
 function setBar(id,p,v){ $(id).style.width=p+'%'; $(id+'v').textContent=v; }
 const FEED=['scan · structure intact · no edge','liquidity sweep detected · waiting confirmation','volatility regime: {v} · filters pass','BOS check · {n} candidates · none qualified','spread within tolerance · queue empty','CHoCH invalidated · standing down','session bias updated · exposure 0%','FVG mapped · awaiting retest','risk budget refreshed · cap {cap}','momentum decay · no entry'];
 function feedLine(day,hour,acc,st,next){ const r=rng(hash(day.date+'|feed|'+Math.floor(hour*60))); let line;
-  if(acc.open[0]){ const o=acc.open[0]; line=`<span style="color:var(--amber2)">holding</span> ${o.t.side==='B'?'BUY':'SELL'} #${o.t.pane+1} · open ${yenS(o.f)} · stop pre-committed`; }
-  else if(st==='SIGNAL') line=`<span style="color:var(--vio)">forming</span> · #${next.pane+1} · conditions ${Math.floor(60+r()*30)}% aligned`;
+  if(acc.open[0]){ const o=acc.open[0]; line=`<span style="color:var(--amber2)">holding</span> ${o.t.side==='B'?'BUY':'SELL'} CH${o.t.pane+1} · open ${yenS(o.f)} · stop pre-committed`; }
+  else if(st==='SIGNAL') line=`<span style="color:var(--vio)">forming</span> · CH${next.pane+1} · conditions ${Math.floor(60+r()*30)}% aligned`;
   else { const t=FEED[Math.floor(r()*FEED.length)]; line=t.replace('{v}',genSeries(day,0).vm[clamp(Math.floor(hour*60),0,1439)].toFixed(2)+'×').replace('{n}',1+Math.floor(r()*5)).replace('{cap}',yen(day.cap)); }
-  feed.unshift(`<div><span style="color:var(--dim2)">${hhmm(hour)}</span> ${line}</div>`); feed=feed.slice(0,12); $('feedBody').innerHTML=feed.join(''); }
+  /* ★行頭の時刻は出さない（2026-09-07 本人指示）。▸ だけ置いて行の頭を揃える */
+  feed.unshift(`<div><span style="color:var(--dim2)">&#9656;</span> ${line}</div>`); feed=feed.slice(0,12); $('feedBody').innerHTML=feed.join(''); }
 function drawEquity(day,hour,acc){ const cv=$('eq'); const dpr=Math.min(2,devicePixelRatio||1); const W=cv.clientWidth,H=cv.clientHeight; if(W<10)return;
   if(cv.width!==W*dpr||cv.height!==H*dpr){cv.width=W*dpr;cv.height=H*dpr;} const g=cv.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,W,H);
   // 0時〜24時の実現残高の階段 + 現在の含み点
@@ -636,7 +646,9 @@ function toast(pane,kind,txt){ const P=panes[pane]; if(!P) return; const f=P.el.
   if(isMobile()) setMobilePane(pane); }
 
 /* ═══════════════════════ 8. テープ・モバイルタブ ═══════════════════════ */
-function buildTape(){ const r=rng(hash('tape')); const it=[]; for(let i=0;i<18;i++){ const ch=(r()-.48)*1.2; it.push(`<span class="it"><span class="sym ${CFG.labels==='abstract'?'txt':''}">${CFG.labels==='abstract'?'PAIR-'+pad(i+1):''}</span><span class="p">${CFG.labels==='abstract'?(1+r()*2000).toFixed(3):'■■■■■'}</span><span class="${ch>=0?'pos':'neg'}">${ch>=0?'+':''}${ch.toFixed(2)}%</span></span>`); }
+function buildTape(){ const r=rng(hash('tape')); const show=CFG.labels!=='none'; const it=[];
+  for(let i=0;i<18;i++){ const ch=(r()-.48)*1.2; const v=(400+r()*3200).toFixed(2);
+    it.push(`<span class="it"><span class="sym">PAIR-${pad(i+1)}</span>${show?`<span class="p">${v}</span>`:''}<span class="${ch>=0?'pos':'neg'}">${ch>=0?'+':''}${ch.toFixed(2)}%</span></span>`); }
   $('tapeIn').innerHTML=it.join('')+it.join(''); }
 const isMobile=()=>matchMedia('(max-width:1000px)').matches;
 let mobilePane=0;
