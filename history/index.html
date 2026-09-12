@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1b2735">
+<meta name="theme-color" content="#ffffff">
 <meta name="robots" content="noindex,nofollow,noarchive">
 <title>取引履歴 — CASH SYSTEM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -50,23 +50,19 @@ a{color:var(--acc)}
 ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:5px}
 ::-webkit-scrollbar-track{background:transparent}
 
-/* ═══════════════ ナビ ═══════════════ */
+/* ═══════════════ ヘッダー ═══════════════ */
 header{position:sticky;top:0;z-index:60;height:var(--hd);display:flex;align-items:center;gap:10px;
-  padding:0 12px;background:var(--nav);color:var(--navtxt)}
-.logo{display:flex;align-items:center;gap:8px;min-width:0}
-.logo .mk{width:22px;height:22px;border-radius:5px;flex:none;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,#3b82f6,#1d4ed8);font-size:11px;font-weight:700;color:#fff}
-.logo .t1{font-size:13.5px;font-weight:700;letter-spacing:.01em;white-space:nowrap}
-.logo .t2{font-size:9.5px;color:var(--navdim);white-space:nowrap;margin-top:-2px}
+  padding:0 14px;background:var(--card);border-bottom:1px solid var(--line);
+  transition:box-shadow .2s}
+header.scrolled{box-shadow:0 2px 12px rgba(16,24,40,.09)}
+:root[data-theme="dark"] header.scrolled{box-shadow:0 2px 14px rgba(0,0,0,.45)}
+header h1{font-size:15px;font-weight:700;letter-spacing:.02em}
 .hgap{flex:1}
-.acctBtn{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--navtxt);
-  border:1px solid rgba(255,255,255,.22);border-radius:6px;padding:6px 10px;white-space:nowrap;
-  max-width:44vw;overflow:hidden;text-overflow:ellipsis;background:rgba(255,255,255,.07)}
-.acctBtn:active{background:rgba(255,255,255,.16)}
-.acctBtn .cv{font-size:9px;opacity:.7}
-.iconb{width:32px;height:32px;flex:none;border-radius:6px;color:var(--navtxt);opacity:.82;
-  display:flex;align-items:center;justify-content:center;font-size:15px;border:1px solid rgba(255,255,255,.18)}
-.iconb:hover{opacity:1;background:rgba(255,255,255,.1)}
+.iconb{width:34px;height:34px;flex:none;border-radius:8px;color:var(--dim);
+  display:flex;align-items:center;justify-content:center;border:1px solid transparent;transition:.15s}
+.iconb svg{width:19px;height:19px;display:block}
+.iconb:hover{color:var(--txt);background:var(--card2);border-color:var(--line)}
+.iconb:active,.iconb.on{color:var(--acc);background:var(--accbg);border-color:var(--accline)}
 
 /* ═══════════════ 枠 ═══════════════ */
 .wrap{max-width:1400px;margin:0 auto;padding:12px 12px 48px}
@@ -82,7 +78,10 @@ header{position:sticky;top:0;z-index:60;height:var(--hd);display:flex;align-item
 .stack{display:grid;gap:12px;align-content:start}
 
 /* ═══════════════ サマリー ═══════════════ */
-.summary{padding:16px 14px 14px}
+.acctbar{padding:12px 14px 0}
+.acctbar .seg{width:100%}
+.acctbar .seg button{flex:1;padding:7px 0;font-size:12px}
+.summary{padding:12px 14px 16px}
 .summary .lb{font-size:10.5px;font-weight:600;letter-spacing:.08em;color:var(--dim);text-transform:uppercase}
 .summary .bal{font-size:clamp(28px,8.4vw,40px);font-weight:700;letter-spacing:-.02em;line-height:1.1;margin:4px 0 0}
 .summary .bal .cur{font-size:.5em;font-weight:600;color:var(--dim);margin-right:3px}
@@ -90,9 +89,6 @@ header{position:sticky;top:0;z-index:60;height:var(--hd);display:flex;align-item
 .summary .net{font-size:16px;font-weight:700}
 .gpill{font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px}
 .gpill.up{color:var(--pos);background:var(--posbg)} .gpill.dn{color:var(--neg);background:var(--negbg)}
-.summary .meta{margin-top:12px;padding-top:10px;border-top:1px solid var(--line);
-  display:flex;flex-wrap:wrap;gap:3px 18px;font-size:11.5px;color:var(--dim)}
-.summary .meta b{color:var(--txt);font-weight:600}
 
 /* ═══════════════ KPI ═══════════════ */
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border-top:1px solid var(--line)}
@@ -132,6 +128,30 @@ canvas{display:block;width:100%;touch-action:pan-y}
 .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--dim);padding:0 14px 12px}
 .legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:-1px}
 
+/* ═══════════════ カレンダー ═══════════════ */
+.calnav{display:flex;align-items:center;gap:3px}
+.calnav button{width:28px;height:28px;border-radius:6px;color:var(--dim);flex:none;
+  display:flex;align-items:center;justify-content:center;border:1px solid var(--line2);background:var(--card)}
+.calnav button svg{width:15px;height:15px;display:block}
+.calnav button:hover:not([disabled]){color:var(--txt);background:var(--card2)}
+.calnav button[disabled]{opacity:.28;cursor:default}
+.calnav .lab{font-size:12.5px;font-weight:700;min-width:92px;text-align:center}
+.calhead{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px}
+.calhead div{text-align:center;font-size:10px;color:var(--dim2);font-weight:600;letter-spacing:.02em}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .cell{border-radius:7px;border:1px solid var(--line);min-height:48px;padding:5px 2px 4px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--card2);overflow:hidden}
+.cal .cell.pad{border:none;background:none}
+.cal .cell .d{font-size:10px;color:var(--dim2);line-height:1;font-weight:600}
+.cal .cell .v{font-size:10.5px;font-weight:700;line-height:1.2;text-align:center;word-break:break-all}
+.cal .cell.has{cursor:pointer;transition:transform .1s}
+.cal .cell.has:active{transform:scale(.96)}
+.cal .cell.off .d{opacity:.45}
+.calfoot{margin-top:10px;padding-top:9px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:baseline;font-size:11.5px;color:var(--dim)}
+.calfoot b{font-size:13px}
+.calhint{font-size:10.5px;color:var(--dim2);margin-top:7px;text-align:center}
+
 /* ═══════════════ 定義リスト ═══════════════ */
 .dl{display:grid;grid-template-columns:1fr auto}
 .dl .k,.dl .v{padding:9px 0;border-bottom:1px solid var(--line);font-size:12.5px}
@@ -141,7 +161,15 @@ canvas{display:block;width:100%;touch-action:pan-y}
 .dl>.k:nth-last-child(2),.dl>.v:last-child{border-bottom:none}
 
 /* ═══════════════ 履歴 ═══════════════ */
-.filters{display:flex;gap:8px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--card2)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;
+  padding:10px 14px;border-bottom:1px solid var(--line);background:var(--card2)}
+.filters.sub{padding-top:0;gap:7px}
+.filters[hidden]{display:none}
+.fbtn{flex:none;display:flex;align-items:center;gap:5px;height:26px;padding:0 9px;border-radius:999px;
+  border:1px solid var(--line2);color:var(--dim);font-size:11px;font-weight:600;background:var(--card)}
+.fbtn svg{width:13px;height:13px;display:block}
+.fbtn.on{color:var(--acc);background:var(--accbg);border-color:var(--accline)}
+.fbtn span:empty{display:none}
 .dayhd{position:sticky;top:calc(var(--hd) + var(--tabh));z-index:4;display:flex;align-items:center;gap:9px;
   padding:8px 14px;background:var(--card2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);
   font-size:12px}
@@ -149,6 +177,7 @@ canvas{display:block;width:100%;touch-action:pan-y}
 .dayhd .dw{color:var(--dim);font-size:11px}
 .dayhd .sp{flex:1}
 .dayhd .wl{font-size:11px;color:var(--dim)}
+.dayhd .wl b{font-weight:600}
 .dayhd .pl{font-weight:700;font-size:13px}
 
 table.tr{width:100%;border-collapse:collapse}
@@ -208,34 +237,27 @@ input[type=file]{display:none}
 </head>
 <body>
 
-<header>
-  <div class="logo">
-    <div class="mk">C</div>
-    <div>
-      <div class="t1">CASH SYSTEM</div>
-      <div class="t2">取引履歴</div>
-    </div>
-  </div>
+<header id="hdr">
+  <h1>取引履歴</h1>
   <div class="hgap"></div>
-  <button class="acctBtn" id="acctBtn">—</button>
-  <button class="iconb" id="themeBtn" title="表示テーマ">☾</button>
-  <button class="iconb" id="gearBtn" title="設定">⚙</button>
+  <button class="iconb" id="gearBtn" aria-label="設定" title="設定">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"></circle>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+    </svg>
+  </button>
 </header>
 
 <div class="wrap">
 
   <div class="card" style="margin-bottom:12px">
+    <div class="acctbar"><div class="seg" id="segAcctTop"></div></div>
     <div class="summary">
       <div class="lb">残高</div>
       <div class="bal num" id="bal"><span class="cur">¥</span>—</div>
       <div class="row2">
         <span class="net num" id="net">—</span>
         <span class="gpill up num" id="netPct"></span>
-      </div>
-      <div class="meta">
-        <span>元本 <b class="num" id="dep">—</b></span>
-        <span><b class="num" id="period">—</b></span>
-        <span><b class="num" id="ndays">—</b></span>
       </div>
     </div>
     <div class="kpis" id="kpis"></div>
@@ -270,6 +292,22 @@ input[type=file]{display:none}
       </div>
 
       <div class="card">
+        <div class="ch"><h3>履歴カレンダー</h3>
+          <div class="calnav">
+            <button id="calPrev" aria-label="前の月"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+            <span class="lab" id="calLabel">—</span>
+            <button id="calNext" aria-label="次の月"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+          </div>
+        </div>
+        <div class="cb">
+          <div class="calhead" id="calHead"></div>
+          <div class="cal" id="cal"></div>
+          <div class="calfoot"><span id="calUnitLab"></span><span id="calSum">—</span></div>
+          <div class="calhint">日付を押すと、その月の取引履歴が開きます</div>
+        </div>
+      </div>
+
+      <div class="card">
         <div class="ch"><h3>取引のクセ</h3><div class="seg" id="segDist"></div></div>
         <div class="cwrap"><canvas id="di" height="190"></canvas><div class="tip" id="diTip"></div></div>
         <div class="legend"><span id="diNote"></span></div>
@@ -284,6 +322,13 @@ input[type=file]{display:none}
     <div class="card" id="histCard">
       <div class="ch"><h3>取引履歴</h3><span class="sub" id="histCount"></span></div>
       <div class="filters">
+        <div class="chips" id="segHRange" style="flex:1"></div>
+        <button class="fbtn" id="filtToggle" aria-label="絞り込み">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+          <span id="filtBadge"></span>
+        </button>
+      </div>
+      <div class="filters sub" id="filtSub" hidden>
         <div class="chips" id="segRes"></div>
         <div class="chips" id="segSide"></div>
         <div class="chips" id="segCh"></div>
@@ -332,7 +377,7 @@ input[type=file]{display:none}
 /* ═════════ 0. 設定 ═════════ */
 const LS='cash_hist_cfg', LSDATA='cash_hist_data';
 const Q=new URLSearchParams(location.search);
-const CFG={acct:'main', range:'all', dist:'dow', res:'all', side:'all', ch:'all',
+const CFG={acct:'main', range:'all', dist:'dow', res:'all', side:'all', ch:'all', hrange:'all',
            money:'yen', cols:'full', asof:'today', tab:'chart', theme:'auto'};
 try{Object.assign(CFG,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
 ['acct','range','asof','money','cols','theme'].forEach(k=>{ if(Q.get(k)) CFG[k]=Q.get(k); });
@@ -344,10 +389,10 @@ const mq=window.matchMedia('(prefers-color-scheme: dark)');
 function applyTheme(){
   const dark = CFG.theme==='dark' || (CFG.theme==='auto' && mq.matches);
   document.documentElement.setAttribute('data-theme', dark?'dark':'light');
-  const b=$('themeBtn'); if(b) b.textContent = dark? '☀' : '☾';
   const m=document.querySelector('meta[name=theme-color]');
-  if(m) m.setAttribute('content', dark? '#0c1119' : '#1b2735');
+  if(m) m.setAttribute('content', dark? '#171d27' : '#ffffff');
   if(typeof drawAll==='function') setTimeout(drawAll,0);
+  if(typeof drawCal==='function') setTimeout(drawCal,0);
 }
 mq.addEventListener&&mq.addEventListener('change',()=>{ if(CFG.theme==='auto') applyTheme(); });
 applyTheme();
@@ -442,17 +487,12 @@ const cls=n=>n>0?'pos':n<0?'neg':'flat';
 
 /* ═════════ 4. サマリー ═════════ */
 function renderHead(){
-  $('acctBtn').innerHTML = (ACCT? ACCT.label : '—')+' <span class="cv">▾</span>';
   $('bal').innerHTML = '<span class="cur">¥</span>'+nf.format(STAT.bal);
   const n=$('net'); n.textContent=money(STAT.net,true)+(CFG.money==='pct'?'':'円'); n.className='net num '+cls(STAT.net);
   const p=$('netPct');
   const g=STAT.dep? STAT.net/STAT.dep : 0;
   p.textContent=(g>=0?'+':'−')+pct(Math.abs(g));
   p.className='gpill num '+(g>=0?'up':'dn');
-  $('dep').textContent = CFG.money==='pct'? '—' : '¥'+nf.format(STAT.dep);
-  $('period').textContent = STAT.from? ymd(STAT.from)+' 〜 '+ymd(STAT.to) : '—';
-  $('ndays').textContent = STAT.days+'営業日';
-
   const k=[
     ['取引回数', nf.format(STAT.n)+'<small>回</small>', 0, '', ''],
     ['勝率', pct(STAT.wr), STAT.wr, '', 'g'],
@@ -649,6 +689,96 @@ function drawMo(){
   $('mSum').innerHTML='<b class="pos">'+win+'勝</b> <span style="color:var(--dim2)">/</span> <b class="neg">'+(ms.length-win)+'敗</b>';
 }
 
+/* ═════════ 8b. 履歴カレンダー ═════════ */
+let calY=null, calM=null;
+function hex2rgba(h,a){
+  h=(h||'').trim().replace('#','');
+  if(h.length===3) h=h.split('').map(c=>c+c).join('');
+  const n=parseInt(h||'888888',16);
+  return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+a+')';
+}
+function calBounds(){
+  if(!DAYS.length) return null;
+  const a=DAYS[0].date, b=DAYS[DAYS.length-1].date;
+  return {lo:a.getFullYear()*12+a.getMonth(), hi:b.getFullYear()*12+b.getMonth()};
+}
+function drawCal(){
+  const head=$('calHead'), grid=$('cal'); if(!grid) return;
+  const bd=calBounds(); if(!bd){ grid.innerHTML=''; return; }
+  if(calY==null){ const d=DAYS[DAYS.length-1].date; calY=d.getFullYear(); calM=d.getMonth(); }
+  const cur=calY*12+calM;
+  $('calLabel').textContent = calY+'年'+(calM+1)+'月';
+  $('calPrev').disabled = cur<=bd.lo;
+  $('calNext').disabled = cur>=bd.hi;
+
+  head.innerHTML = ['月','火','水','木','金','土','日'].map((w,i)=>
+    '<div'+(i>4?' style="opacity:.55"':'')+'>'+w+'</div>').join('');
+
+  const byDay=new Map();
+  for(const d of DAYS) if(d.date.getFullYear()===calY && d.date.getMonth()===calM) byDay.set(d.date.getDate(), d);
+  const mx=Math.max(1,...[...byDay.values()].map(d=>Math.abs(d.pnl)));
+  const unit=calUnit(mx);
+  const first=new Date(calY,calM,1), last=new Date(calY,calM+1,0);
+  const lead=(first.getDay()+6)%7;                    // 月曜はじまり
+  const cpos=CSS('--pos'), cneg=CSS('--neg');
+  let html='';
+  for(let i=0;i<lead;i++) html+='<div class="cell pad"></div>';
+  for(let day=1; day<=last.getDate(); day++){
+    const d=byDay.get(day);
+    const dow=new Date(calY,calM,day).getDay();
+    if(!d){
+      html+='<div class="cell off"><span class="d">'+day+'</span></div>';
+      continue;
+    }
+    const a=0.10+0.42*Math.min(1,Math.abs(d.pnl)/mx);
+    const col=d.pnl>=0?cpos:cneg;
+    html+='<div class="cell has" data-day="'+day+'" style="background:'+hex2rgba(col,a)+';border-color:'+hex2rgba(col,.35)+'">'+
+            '<span class="d">'+day+'</span>'+
+            '<span class="v '+cls(d.pnl)+'">'+calAmt(d.pnl,unit)+'</span>'+
+          '</div>';
+  }
+  grid.innerHTML=html;
+
+  const sum=[...byDay.values()].reduce((s,d)=>s+d.pnl,0);
+  const win=[...byDay.values()].filter(d=>d.pnl>=0).length;
+  $('calSum').innerHTML='<b class="num '+cls(sum)+'">'+money(sum,true)+'</b>';
+  $('calUnitLab').textContent = byDay.size? 'マスの数字は'+unit.lab : '';
+}
+function calUnit(mx){
+  // 桁が多いとマスからはみ出すので、単位はその月に合わせて決めて、名前はマスの外に出す
+  if(CFG.money==='pct') return {div:1, dec:2, lab:'％'};
+  if(mx>=1e8) return {div:1e8, dec:2, lab:'億円'};
+  if(mx>=1e6) return {div:1e4, dec:0, lab:'万円'};
+  if(mx>=1e4) return {div:1e4, dec:1, lab:'万円'};
+  return {div:1, dec:0, lab:'円'};
+}
+function calAmt(v,u){
+  const sg=v>=0?'+':'−';
+  if(CFG.money==='pct'){ const d=STAT.dep||1; return sg+(Math.abs(v)/d*100).toFixed(2); }
+  const x=Math.abs(v)/u.div;
+  return sg+(u.dec? x.toFixed(u.dec) : String(Math.round(x)));   // カンマは入れない（マスに収める）
+}
+function calStep(n){
+  const bd=calBounds(); if(!bd) return;
+  let cur=calY*12+calM+n;
+  cur=Math.max(bd.lo,Math.min(bd.hi,cur));
+  calY=Math.floor(cur/12); calM=cur%12;
+  drawCal();
+}
+function openMonth(day){
+  CFG.hrange = calY+'-'+two(calM+1);
+  CFG.tab='hist'; save();
+  renderHRange(); applyTab(); renderHist(true);
+  setTimeout(()=>{
+    const wide=window.matchMedia('(min-width:900px)').matches;
+    const hd=[...document.querySelectorAll('#histBody .dayhd')]
+      .find(e=>e.textContent.indexOf('/'+two(day))>0);
+    const target = hd || $('histCard');
+    if(wide && hd) $('histBody').scrollTop = hd.offsetTop - 4;
+    else target.scrollIntoView({block:'start',behavior:'smooth'});
+  },60);
+}
+
 /* ═════════ 9. 取引のクセ ═════════ */
 const DISTS=[['dow','曜日'],['hour','時間帯'],['ch','板'],['size','大きさ']];
 let diBars=[];
@@ -752,16 +882,27 @@ function tipBars(bars,x){
 
 /* ═════════ 11. 取引履歴 ═════════ */
 let cursor=0, io=null;
+function hrangeDays(){
+  if(CFG.hrange==='all'||!DAYS.length) return DAYS;
+  const m=/^(\d{4})-(\d\d)$/.exec(CFG.hrange);
+  if(m){                                     // カレンダーから月を指定されたとき
+    const y=+m[1], mo=+m[2]-1;
+    return DAYS.filter(d=>d.date.getFullYear()===y && d.date.getMonth()===mo);
+  }
+  const n={'1m':1,'3m':3,'6m':6,'1y':12}[CFG.hrange];
+  if(!n) return DAYS;
+  const end=DAYS[DAYS.length-1].date, from=new Date(end); from.setMonth(from.getMonth()-n);
+  return DAYS.filter(d=>d.date>=from);
+}
 function filtered(){
-  return DAYS.map(d=>{
+  return hrangeDays().map(d=>{
     const rows=d.rows.filter(r=>
       (CFG.res==='all'||(CFG.res==='win'?r.pnl>=0:r.pnl<0)) &&
       (CFG.side==='all'||r.side===+CFG.side) &&
       (CFG.ch==='all'||r.ch===+CFG.ch));
     if(!rows.length) return null;
     const pnl=rows.reduce((s,r)=>s+r.pnl,0);
-    return {key:d.key,date:d.date,rows,pnl,w:rows.filter(r=>r.pnl>=0).length,
-            l:rows.filter(r=>r.pnl<0).length,bal:d.bal,part:rows.length!==d.rows.length};
+    return {key:d.key,date:d.date,rows,pnl,bal:d.bal,part:rows.length!==d.rows.length};
   }).filter(Boolean).reverse();
 }
 function dayHTML(d){
@@ -778,10 +919,11 @@ function dayHTML(d){
       '<td class="balc num">'+nf.format(r.bal)+'</td>'+
       '</tr>';
   }).join('');
+  const cum=d.bal-STAT.dep;                        // 元本からの累計
   return '<div class="dayhd">'+
       '<span class="dt num">'+ymd(d.date)+'</span><span class="dw">'+WD[d.date.getDay()]+'</span>'+
       '<span class="sp"></span>'+
-      '<span class="wl">'+d.rows.length+'回 '+d.w+'勝'+d.l+'敗'+(d.part?' ※抽出':'')+'</span>'+
+      '<span class="wl num">累計 <b class="'+cls(cum)+'">'+money(cum,true)+'</b></span>'+
       '<span class="pl num '+cls(d.pnl)+'">'+money(d.pnl,true)+'</span>'+
     '</div><table class="tr"><tbody>'+rows+'</tbody></table>';
 }
@@ -811,6 +953,26 @@ function renderHist(reset){
   }
 }
 
+function filtCount(){
+  return (CFG.res!=='all'?1:0)+(CFG.side!=='all'?1:0)+(CFG.ch!=='all'?1:0);
+}
+function syncFilt(){
+  const n=filtCount();
+  $('filtBadge').textContent = n? n : '';
+  $('filtToggle').classList.toggle('on', n>0 || !$('filtSub').hidden);
+}
+function renderHRange(){
+  const el=$('segHRange'); if(!el) return;
+  const items=[['all','全期間'],['1y','1年'],['6m','6ヶ月'],['3m','3ヶ月'],['1m','1ヶ月']];
+  const m=/^(\d{4})-(\d\d)$/.exec(CFG.hrange);
+  let html='';
+  if(m) html+='<button class="on" data-v="all">'+m[1]+'年'+(+m[2])+'月 ✕</button>';
+  html+=items.map(([v,l])=>'<button data-v="'+v+'"'+(CFG.hrange===v?' class="on"':'')+'>'+l+'</button>').join('');
+  el.innerHTML=html;
+  el.onclick=e=>{ const b=e.target.closest('button'); if(!b||!el.contains(b)) return;
+    CFG.hrange=b.dataset.v; save(); renderHRange(); renderHist(true); };
+}
+
 /* ═════════ 12. セグメント ═════════ */
 function seg(el,items,key,after){
   el.innerHTML=items.map(([v,l])=>'<button data-v="'+v+'"'+(String(CFG[key])===String(v)?' class="on"':'')+'>'+l+'</button>').join('');
@@ -821,9 +983,11 @@ function seg(el,items,key,after){
 }
 
 /* ═════════ 13. 描画 ═════════ */
-function drawAll(){ drawEq(); drawDd(); drawMo(); drawDi(); }
+function drawAll(){ drawEq(); drawDd(); drawMo(); drawDi(); drawCal(); }
 function renderAll(){
-  pickAccount(); buildStats(); renderHead(); drawAll(); renderHist(true); syncCfg();
+  pickAccount(); buildStats(); renderHead();
+  calY=null; calM=null;                         // 口座を替えたらカレンダーも最新月へ
+  drawAll(); renderHRange(); renderHist(true); syncCfg();
 }
 function syncCfg(){
   const hidden=ALL.length-VIEW.length;
@@ -846,15 +1010,18 @@ function boot(){
   }
   seg($('segRange'),RANGES,'range',()=>{drawEq();drawDd();});
   seg($('segDist'),DISTS,'dist',drawDi);
-  seg($('segRes'),[['all','すべて'],['win','利益'],['lose','損失']],'res',()=>renderHist(true));
-  seg($('segSide'),[['all','買と売'],['0','買'],['1','売']],'side',()=>renderHist(true));
-  seg($('segCh'),[['all','全板'],['0','CH1'],['1','CH2'],['2','CH3']],'ch',()=>renderHist(true));
-  seg($('segAcct'),SRC.accounts.map(a=>[a.id,a.label]),'acct',renderAll);
+  seg($('segRes'),[['all','すべて'],['win','利益'],['lose','損失']],'res',()=>{syncFilt();renderHist(true);});
+  seg($('segSide'),[['all','買と売'],['0','買'],['1','売']],'side',()=>{syncFilt();renderHist(true);});
+  seg($('segCh'),[['all','全板'],['0','CH1'],['1','CH2'],['2','CH3']],'ch',()=>{syncFilt();renderHist(true);});
+  const accs=SRC.accounts.map(a=>[a.id,a.label]);
+  seg($('segAcct'),accs,'acct',()=>{ syncAcctSegs(); renderAll(); });
+  seg($('segAcctTop'),accs,'acct',()=>{ syncAcctSegs(); renderAll(); });
   seg($('segAsOf'),[['today','今日まで'],['all','全部（先の予定も）']],'asof',renderAll);
   seg($('segMoney'),[['yen','円で出す'],['pct','％だけ']],'money',()=>{renderHead();drawAll();renderHist(true);});
   seg($('segCols'),[['full','全部'],['slim','損益と残高だけ']],'cols',()=>renderHist(true));
   seg($('segTheme'),[['light','ライト'],['dark','ダーク'],['auto','端末に合わせる']],'theme',applyTheme);
   seg($('tabs'),[['chart','成績'],['hist','取引履歴']],'tab',applyTab);
+  renderHRange(); syncFilt();
   applyTab();
 
   bindTip($('eq'),$('eqTip'),x=>tipEq(x));
@@ -868,19 +1035,18 @@ function boot(){
   bindTip($('mo'),$('moTip'),x=>tipBars(moBars,x));
   bindTip($('di'),$('diTip'),x=>tipBars(diBars,x));
 
-  $('gearBtn').onclick=()=>$('cfg').classList.add('open');
+  $('gearBtn').onclick=()=>{ $('cfg').classList.add('open'); $('gearBtn').classList.add('on'); };
   $('cfgClose').onclick=closeCfg;
   $('cfg').onclick=e=>{ if(e.target.id==='cfg') closeCfg(); };
-  $('themeBtn').onclick=()=>{
-    const dark=document.documentElement.getAttribute('data-theme')==='dark';
-    CFG.theme = dark? 'light':'dark'; save(); applyTheme();
-    const el=$('segTheme'); if(el) [...el.children].forEach(c=>c.classList.toggle('on',c.dataset.v===CFG.theme));
+  $('filtToggle').onclick=()=>{
+    const el=$('filtSub'); el.hidden=!el.hidden;
+    $('filtToggle').classList.toggle('on',!el.hidden || filtCount()>0);
   };
-  $('acctBtn').onclick=()=>{
-    const i=SRC.accounts.findIndex(a=>a.id===CFG.acct);
-    CFG.acct=SRC.accounts[(i+1)%SRC.accounts.length].id; save(); renderAll();
-    const el=$('segAcct'); if(el) [...el.children].forEach(c=>c.classList.toggle('on',c.dataset.v===CFG.acct));
-  };
+  $('calPrev').onclick=()=>calStep(-1);
+  $('calNext').onclick=()=>calStep(1);
+  $('cal').onclick=e=>{ const c=e.target.closest('.cell.has'); if(c) openMonth(+c.dataset.day); };
+  const hdr=$('hdr');
+  addEventListener('scroll',()=>hdr.classList.toggle('scrolled',scrollY>4),{passive:true});
   $('fileIn').onchange=loadFile;
   $('resetData').onclick=()=>{ localStorage.removeItem(LSDATA); location.reload(); };
 
@@ -890,7 +1056,11 @@ function boot(){
 
   renderAll();
 }
-function closeCfg(){ $('cfg').classList.remove('open'); }
+function closeCfg(){ $('cfg').classList.remove('open'); $('gearBtn').classList.remove('on'); }
+function syncAcctSegs(){
+  ['segAcct','segAcctTop'].forEach(id=>{ const el=$(id);
+    if(el) [...el.children].forEach(c=>c.classList.toggle('on',c.dataset.v===CFG.acct)); });
+}
 
 /* ═════════ 15. データ読み込み ═════════ */
 function loadFile(e){

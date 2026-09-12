@@ -483,16 +483,17 @@ def main():
         data = load_plan_days()
         by = {a["id"]: a for a in data}
 
-        main_rows = hist + rows_from_account(by["main"])
+        # ★表示名は「口座1 / 口座2」だけにする（本人指示 2026-09-12）。
+        #   口座1＝100万丸投げ（企画・@yuji_eve_life）／口座2＝メイン口座
         accounts.append({
-            "id": "main", "label": "メイン口座", "deposit": DEPOSIT,
-            "note": "%s 運用開始" % START.strftime("%Y年%-m月"),
-            "rows": main_rows,
+            "id": "plan", "label": "口座1", "deposit": 1_000_000,
+            "note": "2026年8月24日 預託（100万丸投げ）",
+            "rows": rows_from_account(by["plan"]),
         })
         accounts.append({
-            "id": "plan", "label": "100万丸投げ（企画）", "deposit": 1_000_000,
-            "note": "2026年8月24日 預託",
-            "rows": rows_from_account(by["plan"]),
+            "id": "main", "label": "口座2", "deposit": DEPOSIT,
+            "note": "%s 運用開始（メイン）" % START.strftime("%Y年%-m月"),
+            "rows": hist + rows_from_account(by["main"]),
         })
 
     js = (

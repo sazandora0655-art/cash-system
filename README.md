@@ -21,7 +21,8 @@
 ## 開き方
 
 - **公開URL（外出先のスマホから）: https://sazandora0655-art.github.io/cash-system/** （GitHub Pages・リポジトリ `sazandora0655-art/cash-system`・noindex）
-  直したら `.\deploy.ps1` を実行＝data.js再生成 → `C:\Users\Owner\github\cash-system` へコピー → commit → push。反映は数十秒
+  直したら **Windowsは `.\deploy.ps1`／Macは `sh deploy.sh`** を実行＝data.js と history.js を再生成 → `github/cash-system` へコピー → commit → push。反映は数十秒
+  （取引履歴サイトも同時に上がる: https://sazandora0655-art.github.io/cash-system/history/ ）
 
 - ローカル: `.claude/launch.json` の `tv-monitor`（`python -m http.server 8645 --directory 26_AIトレード画面_TVモニター`）→ http://localhost:8645/
 - 直接 `index.html` をダブルクリックでも動く（外部通信はGoogle Fontsだけ。オフラインでも等幅フォールバックで崩れない）
