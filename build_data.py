@@ -95,7 +95,19 @@ for day, date, net in PLAN:
         last_close = raw[f"D{day}"]["balClose"]; continue
     raw[f"D{day}"] = gen_plan_day(day, date, net, last_close)
     last_close += net
-assert last_close == 1332151, last_close  # 計画表の検算（10/2 残高）
+assert last_close == 1332151, last_close  # 10/2までの既存計画
+# 10月追加分：日別金額と個別取引を保存したシミュレーション設定。
+for seq, d in enumerate(json.loads((HERE / "october-plan.json").read_text()), 31):
+    trades = []
+    for t in d["trades"]:
+        def hour(value):
+            h, m = map(int, value.split(":")); return h + m / 60
+        trades.append(dict(h=hour(t["entry"]), x=hour(t["exit"]), side={"BUY":"B","SELL":"S"}[t["side"]], pane=t["pane"]-1, pnl=t["pnl"]))
+    assert d["balOpen"] == last_close
+    assert sum(t["pnl"] for t in trades) == d["net"]
+    raw[f"D{seq}"] = dict(d, day=seq, dayStart=9, dayEnd=23, trades=trades, plan=True)
+    last_close = d["balClose"]
+assert last_close == 1832312, last_close
 days = []
 for k, v in raw.items():
     if not k.startswith("D"):

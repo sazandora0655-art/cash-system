@@ -1,21 +1,10 @@
 # -*- coding: utf-8 -*-
-"""取引履歴サイトのデータを書き出す（history.js）
+"""取引履歴サイトのデータを書き出す。
 
-使い方:  python build_history.py
-入力:    ../data.js（既存のAIトレード画面が読んでいる正データ＝企画30日分・手で作らない）
-出力:    history.js（取引履歴サイト index.html が読む）
-
-★この画面は「2年分の履歴を遡って見る」ためのもの。数字の作り方は2つに分かれる。
-
-  1) 2026-08-24 以降（企画の30日）＝ ../data.js の取引をそのまま通す。1円も動かさない。
-     → AIトレード画面・リプレイ・台本と完全に一致する。
-
-  2) 2026-08-21 まで（過去2年）＝ このスクリプトが決定論で生成する（seed固定・何度叩いても同じ）。
-     終点が main 口座の元本 218,093,751円 ちょうどに着地するように作ってあるので、
-     過去2年 → 企画30日 が残高で切れ目なく繋がる。
-
-★本物のデータに差し替えるときは INPUT_CSV に MT4/MT5 の履歴CSVを置いて叩く（後述）か、
-  サイトの ⚙ から CSV / JSON を読み込む。生成データは既定の見本でしかない。
+既定では ../data.js の2026-09-01以降を、両口座とも変更せず使用する。
+画面の「今日として扱う日付」まで表示する。元データは物語用のシミュレーション設定。
+過去2年の生成関数は旧設定の参照用として残しているが、既定のmain()からは呼ばない。
+INPUT_CSVがある場合の読み込み経路は維持。
 """
 import json, sys, io, math, random, csv
 from pathlib import Path
@@ -478,28 +467,24 @@ def main():
                          "note": INPUT_CSV.name, "rows": rows})
         print("CSVから %d件 読み込みました" % len(rows))
     else:
-        gen = generate()
-        hist = rows_from_generated(gen)
         data = load_plan_days()
-        by = {a["id"]: a for a in data}
-
-        # ★表示名は「口座1 / 口座2」だけにする（本人指示 2026-09-12）。
-        #   口座1＝100万丸投げ（企画・@yuji_eve_life）／口座2＝メイン口座
-        accounts.append({
-            "id": "plan", "label": "口座1", "deposit": 1_000_000,
-            "note": "2026年8月24日 預託（100万丸投げ）",
-            "rows": rows_from_account(by["plan"]),
-        })
-        accounts.append({
-            "id": "main", "label": "口座2", "deposit": DEPOSIT,
-            "note": "%s 運用開始（メイン）" % START.strftime("%Y年%-m月"),
-            "rows": hist + rows_from_account(by["main"]),
-        })
+        for account in data:
+            days = [d for d in account['days'] if d['date'] >= '2026-09-01']
+            if not days:
+                continue
+            account = dict(account, days=days)
+            accounts.append({
+                'id': account['id'],
+                'label': '企画口座' if account['id']=='plan' else 'メイン口座',
+                'deposit': days[0]['balOpen'],
+                'note': '2026-09-01以降のシミュレーション設定。稼働画面と同じ取引。',
+                'rows': rows_from_account(account),
+            })
 
     js = (
         "// 自動生成: python build_history.py （手で編集しない）\n"
         "// 2026-08-24以降は ../data.js の取引そのもの＝AIトレード画面・台本と1円も違わない。\n"
-        "// それ以前の2年は build_history.py が決定論で生成（seed=%d・何度叩いても同じ）。\n"
+        "// 表示対象は2026-09-01以降。シミュレーション設定データ（seed=%d）。\n"
         "// fmt: [約定, 決済, 板, 売買(0=BUY 1=SELL), ロット, 損益, 決済後の残高]  時刻は %s からの分\n"
         % (SEED, BASE_DT.strftime("%Y-%m-%d %H:%M")) +
         "window.EVE_HISTORY = {\n"

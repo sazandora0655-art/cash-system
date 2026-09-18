@@ -233,6 +233,7 @@ input[type=file]{display:none}
   table.tr td{padding:9px 3px;font-size:12px}
   table.tr td:first-child{padding-left:11px} table.tr td:last-child{padding-right:11px}
 }
+select,input[type=date]{font:inherit;font-size:14px;color:var(--txt);background:var(--card2);border:1px solid var(--line2);border-radius:6px;padding:10px;max-width:100%;margin:6px 0}#accountSelect{width:100%}
 </style>
 </head>
 <body>
@@ -251,7 +252,7 @@ input[type=file]{display:none}
 <div class="wrap">
 
   <div class="card" style="margin-bottom:12px">
-    <div class="acctbar"><div class="seg" id="segAcctTop"></div></div>
+    
     <div class="summary">
       <div class="lb">残高</div>
       <div class="bal num" id="bal"><span class="cur">¥</span>—</div>
@@ -345,8 +346,8 @@ input[type=file]{display:none}
 
     <div class="sec"><div class="k">表示テーマ</div><div class="seg" id="segTheme">
       <button data-v="light">ライト</button><button data-v="dark">ダーク</button><button data-v="auto">端末に合わせる</button></div></div>
-    <div class="sec"><div class="k">口座</div><div class="seg" id="segAcct"></div></div>
-    <div class="sec"><div class="k">表示の終わり（収録で日付を止めたいとき）</div><div class="seg" id="segAsOf"></div></div>
+    <div class="sec"><label class="k" for="accountSelect">表示する口座</label><select id="accountSelect"></select></div>
+    <div class="sec"><label class="k" for="asOfDate">今日として扱う日付</label><input type="date" id="asOfDate"><div class="seg" id="segAsOf"><button id="realToday" type="button">実際の今日に戻す</button></div><div id="asOfCaption" style="font-size:12px;margin-top:8px;color:var(--dim)"></div></div>
     <div class="sec"><div class="k">金額の出し方</div><div class="seg" id="segMoney">
       <button data-v="yen">円で出す</button><button data-v="pct">％だけ（額を隠す）</button></div></div>
     <div class="sec"><div class="k">履歴に出す列</div><div class="seg" id="segCols">
@@ -363,7 +364,7 @@ input[type=file]{display:none}
     <div class="sec"><a class="linkbtn" href="../index.html">← AI稼働画面へ戻る</a></div>
 
     <div class="note">
-      2026年8月24日以降は AI稼働画面・台本と同じ取引そのもの（1円も違わない）。それより前は build_history.py が作った履歴。<br>
+      2026年9月1日以降の設定データ。AI稼働画面と同じ取引を表示。<br>
       URL: <span style="color:var(--txt)">?acct=main&amp;asof=2026-09-11&amp;range=1y&amp;theme=dark</span>
     </div>
     <button class="close" id="cfgClose">閉じる</button>
@@ -380,7 +381,7 @@ const Q=new URLSearchParams(location.search);
 const CFG={acct:'main', range:'all', dist:'dow', res:'all', side:'all', ch:'all', hrange:'all',
            money:'yen', cols:'full', asof:'today', tab:'chart', theme:'auto'};
 try{Object.assign(CFG,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
-['acct','range','asof','money','cols','theme'].forEach(k=>{ if(Q.get(k)) CFG[k]=Q.get(k); });
+['acct','range','hrange','asof','money','cols','theme'].forEach(k=>{ if(Q.get(k)) CFG[k]=Q.get(k); });
 function save(){ try{localStorage.setItem(LS,JSON.stringify(CFG))}catch(e){} }
 const $=id=>document.getElementById(id);
 
@@ -422,12 +423,14 @@ function pickAccount(){
             hold:Math.max(1,Math.round((dOut-dIn)/MIN))};
   }).sort((a,b)=>a.out-b.out);
 }
-function asOfKey(){
-  if(CFG.asof==='all') return 99999999;
-  let d=new Date();
-  if(/^\d{4}-\d\d-\d\d$/.test(CFG.asof)) d=new Date(CFG.asof+'T23:59');
-  return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();
+function asOfDate(){
+  if(/^\d{4}-\d\d-\d\d$/.test(CFG.asof))return new Date(CFG.asof+'T23:59:59');
+  const date=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Tokyo'});
+  return new Date(date+'T23:59:59');
 }
+function asOfKey(){const d=asOfDate();return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();}
+function rangeStart(months){const end=asOfDate();const start=new Date(end.getFullYear(),end.getMonth()-months,1);start.setDate(Math.min(end.getDate(),new Date(start.getFullYear(),start.getMonth()+1,0).getDate()));start.setHours(0,0,0,0);return start;}
+
 function groupDays(rows){
   const out=[]; let cur=null;
   for(const r of rows){
@@ -576,13 +579,13 @@ const RANGES=[['1m','1ヶ月'],['3m','3ヶ月'],['6m','6ヶ月'],['1y','1年'],[
 function rangeDays(){
   if(CFG.range==='all'||!DAYS.length) return DAYS;
   const m={'1m':1,'3m':3,'6m':6,'1y':12}[CFG.range]||12;
-  const end=DAYS[DAYS.length-1].date, from=new Date(end); from.setMonth(from.getMonth()-m);
+  const from=rangeStart(m);
   return DAYS.filter(d=>d.date>=from);
 }
 let eqPts=[];
 function drawEq(){
   const cv=$('eq'), ds=rangeDays(); const {g,w,h}=fit(cv);
-  if(!ds.length) return;
+  if(!ds.length){eqPts=[];$('eqNote').textContent='該当する取引なし';return;}
   const pad={l:56,r:12,t:14,b:24};
   const open = ds[0].bal - ds[0].pnl;
   let min=Math.min(open,...ds.map(d=>d.bal)), max=Math.max(open,...ds.map(d=>d.bal));
@@ -619,7 +622,7 @@ function drawEq(){
 let ddPts=[];
 function drawDd(){
   const cv=$('dd'), ds=rangeDays(); const {g,w,h}=fit(cv);
-  if(!ds.length) return;
+  if(!ds.length){ddPts=[];return;}
   const pad={l:56,r:12,t:12,b:20};
   let peak=ds[0].bal-ds[0].pnl;
   const xs=ds.map(d=>{ peak=Math.max(peak,d.bal); return (peak-d.bal)/peak; });
@@ -654,7 +657,7 @@ function months(){
 }
 function drawMo(){
   const cv=$('mo'), ms=months(); const {g,w,h}=fit(cv);
-  if(!ms.length) return;
+  if(!ms.length){moBars=[];$('mSum').textContent='—';return;}
   const pad={l:56,r:12,t:12,b:30};
   const vs=ms.map(o=>o.pnl);
   let hi=Math.max(0,...vs), lo=Math.min(0,...vs);
@@ -704,7 +707,7 @@ function calBounds(){
 }
 function drawCal(){
   const head=$('calHead'), grid=$('cal'); if(!grid) return;
-  const bd=calBounds(); if(!bd){ grid.innerHTML=''; return; }
+  const bd=calBounds(); if(!bd){grid.innerHTML='';head.innerHTML='';$('calLabel').textContent='該当する取引なし';$('calSum').textContent='—';$('calUnitLab').textContent='';$('calPrev').disabled=true;$('calNext').disabled=true;return;}
   if(calY==null){ const d=DAYS[DAYS.length-1].date; calY=d.getFullYear(); calM=d.getMonth(); }
   const cur=calY*12+calM;
   $('calLabel').textContent = calY+'年'+(calM+1)+'月';
@@ -812,7 +815,7 @@ function distData(){
 }
 function drawDi(){
   const cv=$('di'), a=distData(); const {g,w,h}=fit(cv);
-  if(!a.length) return;
+  if(!a.length){diBars=[];return;}
   const byCount = CFG.dist==='size';
   const pad={l:56,r:12,t:12,b:28};
   const vals=a.map(o=>byCount?o.n:o.pnl);
@@ -891,7 +894,7 @@ function hrangeDays(){
   }
   const n={'1m':1,'3m':3,'6m':6,'1y':12}[CFG.hrange];
   if(!n) return DAYS;
-  const end=DAYS[DAYS.length-1].date, from=new Date(end); from.setMonth(from.getMonth()-n);
+  const from=rangeStart(n);
   return DAYS.filter(d=>d.date>=from);
 }
 function filtered(){
@@ -990,8 +993,11 @@ function renderAll(){
   drawAll(); renderHRange(); renderHist(true); syncCfg();
 }
 function syncCfg(){
+  $('accountSelect').value=CFG.acct;
+  const date=asOfDate();$('asOfDate').value=date.getFullYear()+'-'+two(date.getMonth()+1)+'-'+two(date.getDate());
+  $('asOfCaption').textContent=ymd(date)+' までの決済済み取引を表示';
   const hidden=ALL.length-VIEW.length;
-  $('status').innerHTML = (ACCT?ACCT.label:'—')+
+  $('status').innerHTML = (ACCT?(ACCT.id==='plan'?'企画口座':ACCT.id==='main'?'メイン口座':ACCT.label):'—')+
     ' ／ 元本 ¥'+nf.format(STAT.dep)+' → 残高 ¥'+nf.format(STAT.bal)+
     (hidden? '<br>この先の '+nf.format(hidden)+'件（'+CFG.asof+'より後）は出していません' : '');
 }
@@ -1013,10 +1019,11 @@ function boot(){
   seg($('segRes'),[['all','すべて'],['win','利益'],['lose','損失']],'res',()=>{syncFilt();renderHist(true);});
   seg($('segSide'),[['all','買と売'],['0','買'],['1','売']],'side',()=>{syncFilt();renderHist(true);});
   seg($('segCh'),[['all','全板'],['0','CH1'],['1','CH2'],['2','CH3']],'ch',()=>{syncFilt();renderHist(true);});
-  const accs=SRC.accounts.map(a=>[a.id,a.label]);
-  seg($('segAcct'),accs,'acct',()=>{ syncAcctSegs(); renderAll(); });
-  seg($('segAcctTop'),accs,'acct',()=>{ syncAcctSegs(); renderAll(); });
-  seg($('segAsOf'),[['today','今日まで'],['all','全部（先の予定も）']],'asof',renderAll);
+  const selector=$('accountSelect');selector.replaceChildren();
+  SRC.accounts.forEach(a=>{const o=document.createElement('option');o.value=a.id;o.textContent=a.id==='plan'?'企画口座':a.id==='main'?'メイン口座':a.label;selector.appendChild(o);});
+  selector.value=CFG.acct;selector.onchange=e=>{CFG.acct=e.target.value;save();renderAll();};
+  $('asOfDate').onchange=e=>{if(!e.target.value||!e.target.validity.valid)return;CFG.asof=e.target.value;save();renderAll();};
+  $('realToday').onclick=()=>{CFG.asof='today';save();renderAll();};
   seg($('segMoney'),[['yen','円で出す'],['pct','％だけ']],'money',()=>{renderHead();drawAll();renderHist(true);});
   seg($('segCols'),[['full','全部'],['slim','損益と残高だけ']],'cols',()=>renderHist(true));
   seg($('segTheme'),[['light','ライト'],['dark','ダーク'],['auto','端末に合わせる']],'theme',applyTheme);

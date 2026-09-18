@@ -159,7 +159,7 @@
   /* ── settings ── */
   #cfg{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:16px}
   #cfg.open{display:flex}
-  .modal{width:100%;max-width:520px;max-height:92vh;overflow:auto;background:var(--panel);border:1px solid var(--line2);border-radius:8px;padding:16px 18px}
+  .modal{width:100%;max-width:760px;max-height:92vh;overflow:auto;background:var(--panel);border:1px solid var(--line2);border-radius:8px;padding:16px 18px}
   .modal h2{font-family:var(--sans);font-size:14px;letter-spacing:.14em;color:var(--cyan);margin-bottom:12px}
   .modal .sec{margin-bottom:12px}
   .modal .sec .k{font-size:9px;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;margin-bottom:5px}
@@ -171,6 +171,33 @@
   .modal .note kbd{border:1px solid var(--line2);border-radius:3px;padding:0 4px;color:var(--txt)}
   .modal .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   .modal .close{margin-top:10px;width:100%;background:var(--cyan);color:#071018;border:none;border-radius:4px;padding:9px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.1em}
+
+
+  .month-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0}
+  .month-nav button,.cal-day,.trade-bar{font-family:inherit;cursor:pointer;color:var(--txt);background:var(--bg2);border:1px solid var(--line2);border-radius:4px}
+  .month-nav button{padding:10px 14px}.month-nav button:disabled{opacity:.3;cursor:default}
+  .calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+  .calendar .weekday{text-align:center;color:var(--dim);font-size:11px;padding:5px}
+  .cal-day{min-height:58px;padding:7px 3px;text-align:center;font-size:17px}
+  .cal-day .mobile-amount{display:none}.cal-day small{display:block;font-size:10px;margin-top:5px;color:var(--dim)}
+  .cal-day[aria-pressed=true]{border-color:var(--cyan);background:rgba(0,229,255,.12);color:var(--cyan)}
+  .cal-day.profit{background:rgba(61,220,151,.12);border-color:rgba(61,220,151,.3)}
+  .cal-day.loss{background:rgba(255,95,95,.12);border-color:rgba(255,95,95,.3)}
+  .cal-day.profit small{color:var(--grn2)}.cal-day.loss small{color:var(--red2)}
+  .cal-day[aria-pressed=true]{outline:2px solid var(--cyan);outline-offset:-2px}
+  .timeline-end{color:var(--amber2);font-size:15px}.timeline-now{position:absolute;top:0;bottom:0;width:1px;background:var(--txt);opacity:.75;pointer-events:none}
+  .cal-day:disabled{opacity:.38;cursor:default}
+  .timeline-title{margin:14px 0 8px;font-size:13px;color:var(--txt);line-height:1.8}
+  .timeline-axis{display:flex;justify-content:space-between;margin-left:38px;color:var(--dim);font-size:10px}
+  .timeline-lane{display:flex;align-items:center;gap:6px;margin:7px 0}.lane-label{width:32px;font-size:10px;color:var(--dim);flex:none}
+  .lane-track{height:38px;position:relative;flex:1;background:repeating-linear-gradient(to right,var(--line) 0,var(--line) 1px,transparent 1px,transparent 25%);border-bottom:1px solid var(--line2)}
+  .trade-bar{position:absolute;top:3px;height:31px;min-width:5px;padding:0;background:var(--cyan);border:0;color:#071018;font-size:10px;overflow:hidden}
+  .trade-bar.sell{background:var(--mag)}.trade-bar:focus-visible{outline:2px solid var(--txt);outline-offset:3px}
+  #timeSeek{width:100%;accent-color:var(--cyan);margin:10px 0}#tradeDetail{font-size:12px;line-height:1.8;min-height:42px;color:var(--txt)}
+  .time-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--dim)}
+  .trade-list{width:100%;font-size:11px;border-collapse:collapse;margin-top:8px}.trade-list td,.trade-list th{padding:8px 3px;text-align:left;border-bottom:1px solid var(--line)}
+  .trade-jump{background:transparent;border:0;color:var(--cyan);font:inherit;cursor:pointer;text-decoration:underline;padding:5px 0}
+  @media(max-width:480px){.modal{padding:12px}.cal-day{font-size:15px;min-height:54px}.cal-day small{font-size:9px;white-space:nowrap}.cal-day .desktop-amount{display:none}.cal-day .mobile-amount{display:inline}.timeline-axis{font-size:9px}.trade-bar{min-width:8px}}
 
   /* ── responsive ── */
   @media (max-width:1280px){#app{grid-template-columns:250px 1fr 250px}}
@@ -280,9 +307,20 @@
     <h2>CASH SYSTEM · 裏設定</h2>
     <div id="status" style="font-size:11px;color:var(--amber2);margin:-6px 0 12px;letter-spacing:.06em"></div>
     <div class="sec"><div class="k">アカウント</div><div class="seg" id="segAcct"></div></div>
-    <div class="sec"><div class="k">時刻モード（日や時刻を選ぶと自動でREPLAYになり、その時刻から進む。LIVE＝今日・実時刻）</div><div class="seg" id="segMode">
+    <div class="sec"><div class="k">時刻モード（日付・時刻を選ぶとREPLAYで再生。LIVE＝今日・実時刻）</div><div class="seg" id="segMode">
       <button data-v="live">LIVE（実時刻）</button><button data-v="replay">REPLAY（仮想時刻）</button></div></div>
-    <div class="sec"><div class="k">日（台本の日付）</div><div class="seg" id="segDay"></div></div>
+    <div class="sec"><div class="k">日付・取引スケジュール（日本時間）</div>
+      <div class="month-nav"><button id="prevMonth" aria-label="前の月">‹</button><strong id="calendarMonth"></strong><button id="nextMonth" aria-label="次の月">›</button><button id="todayLive">今日・LIVE</button></div>
+      <div class="calendar" id="calendar"></div>
+      <div class="timeline-title" id="timelineTitle"></div><div class="timeline-end num" id="timelineEnd"></div>
+      <div class="timeline-axis"><span>0:00</span><span>6:00</span><span>12:00</span><span>18:00</span><span>23:59</span></div>
+      <div id="tradeTimeline"></div>
+      <label class="time-labels" for="timeSeek"><span>表示する時刻（離すと再生）</span><output id="seekTime">09:00</output></label>
+      <input type="range" id="timeSeek" min="0" max="1439" step="1" value="540">
+      <div class="time-labels"><span>BUY＝シアン／SELL＝ピンク</span><span>バーを押すと約定時刻へ</span></div>
+      <div id="tradeDetail" aria-live="polite"></div>
+      <details><summary>取引時刻と金額の一覧</summary><table class="trade-list"><thead><tr><th>約定→決済</th><th>売買</th><th>画面</th><th>損益</th></tr></thead><tbody id="tradeList"></tbody></table></details>
+    </div>
     <div class="sec" id="secReplay"><div class="k">開始時刻・速度（その時刻より後の約定は出ない）</div><div class="row">
       <input type="time" id="inT" value="09:00"> <span class="seg" id="segSpeed">
       <button data-v="1">×1</button><button data-v="5">×5</button><button data-v="7">×7</button><button data-v="10">×10</button><button data-v="60">×60</button><button data-v="240">×240</button></span>
@@ -301,10 +339,10 @@
          style="display:block;text-align:center;padding:12px;border:1px solid rgba(0,229,255,.4);border-radius:6px;
                 color:var(--cyan);font-size:11.5px;letter-spacing:.14em;text-decoration:none;
                 background:rgba(0,229,255,.06);font-family:var(--mono)">
-        取引履歴を開く（過去2年分・別タブ）
+        取引履歴を開く（別タブ）
       </a>
       <div style="font-size:9.5px;color:var(--dim2);margin-top:7px;line-height:1.8;letter-spacing:.04em">
-        MyFXBook のような一覧。2年ぶんの取引をさかのぼって見られる。PC・スマホ兼用／白・黒の2テーマ。<br>
+        選択中の日付を「今日」として取引履歴を表示。PC・スマホ兼用／白・黒の2テーマ。<br>
         この画面と同じ取引が入っているので、残高は1円も違わない。
       </div>
     </div>
@@ -338,14 +376,16 @@ function useAccount(){
   return ACCT;
 }
 const LS='cash_cfg';
-const DEF={acct:'plan',mode:'live',day:'auto',t:'09:00',speed:1,panes:'auto',layout:'focus',labels:'index',cw:7};
+const DEF={acct:'plan',mode:'live',day:'auto',date:'',t:'09:00',speed:5,panes:'auto',layout:'focus',labels:'index',cw:7};
 let CFG=Object.assign({},DEF);
 try{Object.assign(CFG,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
+// One-time migration of the previous default; later user speed choices are retained.
+if(!localStorage.getItem('cash_speed_v2')){CFG.speed=5;try{localStorage.setItem('cash_speed_v2','1')}catch(e){}}
 (function(){ const q=new URLSearchParams(location.search);
   for(const k of Object.keys(DEF)){ if(q.has(k)){ let v=q.get(k); if(k==='speed'||k==='cw') v=+v; CFG[k]=v; } }
-  if(q.has('day')&&q.get('day')!=='auto') CFG.day=+q.get('day');
+  if(q.has('day')){ if(!q.has('date')) CFG.date=''; if(q.get('day')!=='auto') CFG.day=+q.get('day'); }
 })();
-function normalize(){ if(CFG.day!=='auto') CFG.mode='replay'; if(CFG.mode==='live') CFG.day='auto';
+function normalize(){ if(CFG.day!=='auto'||CFG.date) CFG.mode='replay'; if(CFG.mode==='live'){ CFG.day='auto'; CFG.date=''; }
   if(CFG.labels!=='none'&&CFG.labels!=='index') CFG.labels='index';   // 旧 redact/abstract からの移行
   if(!ACCOUNTS.some(a=>a.id===CFG.acct)) CFG.acct=ACCOUNTS[0].id; }
 normalize();
@@ -366,16 +406,17 @@ function ymd(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDat
 
 /* ═══════════════════════ 2. 時計（LIVE／REPLAY） ═══════════════════════ */
 const Clock={ vt:9, paused:false, last:performance.now(), dayIdx:0,
-  init(){ this.syncDay(); if(CFG.mode==='replay'){ const [h,m]=(CFG.t||'09:00').split(':').map(Number); this.vt=(h||0)+(m||0)/60; } },
+  init(){ this.last=performance.now(); this.syncDay(); if(CFG.mode==='replay'){ const [h,m]=(CFG.t||'09:00').split(':').map(Number); this.vt=(h||0)+(m||0)/60; } },
   syncDay(){ // LIVE=今日の日付に一致する日。無ければ直近（過去）の日、それも無ければ1日目
+    if(CFG.date&&CFG.mode==='replay'){ let i=DAYS.findIndex(d=>d.date===CFG.date); if(i<0){i=0; DAYS.forEach((d,j)=>{if(d.date<=CFG.date)i=j;});} this.dayIdx=i; return; }
     if(CFG.day!=='auto'){ const i=DAYS.findIndex(d=>d.day===+CFG.day); this.dayIdx=i<0?0:i; return; }
     const today=ymd(jstNow()); let idx=DAYS.findIndex(d=>d.date===today);
     if(idx<0){ idx=0; for(let i=0;i<DAYS.length;i++) if(DAYS[i].date<=today) idx=i; }
     this.dayIdx=idx; },
   tick(){ const n=performance.now(); const dt=(n-this.last)/1000; this.last=n;
-    if(CFG.mode==='replay'&&!this.paused){ this.vt+=dt*CFG.speed/3600; if(this.vt>=24){ this.vt-=24; if(CFG.day==='auto'&&this.dayIdx<DAYS.length-1) this.dayIdx++; else if(CFG.day!=='auto'){} } } },
+    if(CFG.mode==='replay'&&!this.paused){ this.vt+=dt*CFG.speed/3600; if(this.vt>=24){ this.vt=24-1/3600;this.paused=true; } } },
   hour(){ if(CFG.mode==='live'){ const d=jstNow(); return d.getHours()+d.getMinutes()/60+d.getSeconds()/3600+d.getMilliseconds()/3600000; } return this.vt; },
-  day(){ const d=DAYS[this.dayIdx]||DAYS[0]; if(CFG.mode!=='live'||CFG.day!=='auto') return d;
+  day(){ const d=DAYS[this.dayIdx]||DAYS[0]; if(CFG.mode==='replay'&&CFG.date&&d.date!==CFG.date){ const base=d.date<CFG.date?d.balClose:d.balOpen; return {id:'CLOSED'+CFG.date,day:d.day,date:CFG.date,dayStart:9,dayEnd:23,panes:d.panes,net:0,wins:0,losses:0,balOpen:base,balClose:base,cap:Math.floor(base*.006),trades:[],closed:true}; } if(CFG.mode!=='live'||CFG.day!=='auto') return d;
     const now=jstNow(); const today=ymd(now); if(d.date===today) return d;
     // 今日が台本の日でない（土日・計画の外）→ 直前の終値で止まったクローズ日
     const base=(d.date<today)?d.balClose:d.balOpen;
@@ -562,7 +603,7 @@ const eqHist=[];
 function tickPanels(day,hour,acc){
   // header
   const h=Math.floor(hour), m=Math.floor(hour*60)%60, s=Math.floor(hour*3600)%60;
-  $('status').textContent=ACCT.label+' · '+(day.closed?'休場（'+day.date+'）・前営業日 '+day.day+'日目の終値で停止':day.day+'日目（'+day.date+'）'+(day.plan?'・残高計画から生成':''))+' · '+pad(h)+':'+pad(m)+':'+pad(s)+' · '+(CFG.mode==='replay'?('REPLAY ×'+CFG.speed+(Clock.paused?' ⏸':'')):'LIVE');
+  $('status').textContent=ACCT.label+' · '+(day.closed?'休場（'+day.date+'）・前営業日 '+day.day+'日目の終値で停止':day.date+'（'+day.day+'日目）'+(day.plan?'・残高計画から生成':''))+' · '+pad(h)+':'+pad(m)+':'+pad(s)+' · '+(CFG.mode==='replay'?('REPLAY ×'+CFG.speed+(Clock.paused?' ⏸':'')):'LIVE');
   $('liveTag').classList.toggle('replay',CFG.mode==='replay');
   // wallet
   const be=$('bal'); be.innerHTML='<small>¥</small>'+Math.round(acc.realized).toLocaleString('ja-JP');
@@ -688,31 +729,102 @@ function setMobilePane(i){ mobilePane=i; panes.forEach((P,k)=>P.el.classList.tog
 function updateTabsHot(acc){ document.querySelectorAll('.mtabs button').forEach((b,k)=>b.classList.toggle('hot',acc.open.some(o=>o.t.pane===k))); }
 
 /* ═══════════════════════ 9. 設定UI・キー ═══════════════════════ */
-function segInit(id,key,cb){ const el=$(id); el.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{ CFG[key]=isNaN(+b.dataset.v)||b.dataset.v==='auto'||b.dataset.v==='random'?b.dataset.v:+b.dataset.v; if(key==='panes'&&(b.dataset.v==='auto'||b.dataset.v==='random')) CFG[key]=b.dataset.v; saveCfg(); segSync(); cb&&cb(); }; }); }
+let calendarView='';
+function calendarMonths(){return [...new Set(DAYS.map(d=>d.date.slice(0,7)))];}
+function selectedSchedule(){return Clock.day();}
+function selectDate(date,play=true){
+  const d=DAYS.find(d=>d.date===date);
+  CFG.date=date;CFG.day=d?d.day:(DAYS.filter(d=>d.date<date).at(-1)||DAYS[0]).day;CFG.mode='replay';
+  Clock._closed=null;Clock.init();Clock.paused=!play;saveCfg();resetSeen();segSync();
+}
+function seekSchedule(minute,trade,play=true){
+  const date=selectedSchedule().date;
+  CFG.t=pad(Math.floor(minute/60))+':'+pad(minute%60);
+  selectDate(date,play);Clock.vt=minute/60;$('inT').value=CFG.t;
+  $('tradeDetail').textContent=trade?`${hhmm(trade.h)} → ${hhmm(trade.x)} ／ ${trade.side==='B'?'BUY':'SELL'} ／ CH${trade.pane+1} ／ ${yenS(trade.pnl)}（決済時）`:`${CFG.t} から${play?'再生中':'時刻を選択中'}`;
+}
+function renderCalendar(){
+  if(!$('calendar'))return;
+  const current=selectedSchedule();const months=calendarMonths();
+  if(!calendarView)calendarView=current.date.slice(0,7);
+  if(!months.includes(calendarView))calendarView=months.at(-1);
+  const [year,month]=calendarView.split('-').map(Number);
+  $('calendarMonth').textContent=`${year}年${month}月`;
+  $('prevMonth').disabled=months.indexOf(calendarView)<=0;
+  $('nextMonth').disabled=months.indexOf(calendarView)>=months.length-1;
+  const cal=$('calendar');cal.innerHTML='日月火水木金土'.split('').map(w=>`<div class="weekday">${w}</div>`).join('');
+  for(let i=0;i<new Date(year,month-1,1).getDay();i++)cal.appendChild(document.createElement('div'));
+  for(let num=1;num<=new Date(year,month,0).getDate();num++){
+    const date=`${year}-${pad(month)}-${pad(num)}`,day=DAYS.find(d=>d.date===date);
+    const weekend=[0,6].includes(new Date(year,month-1,num).getDay());
+    const available=Boolean(day)||(weekend&&date>=DAYS[0].date&&date<=DAYS.at(-1).date.slice(0,7)+'-31');
+    const b=document.createElement('button');b.type='button';b.className='cal-day'+(day?(day.net>=0?' profit':' loss'):'');b.disabled=!available;
+    b.setAttribute('aria-pressed',String(date===current.date));b.setAttribute('aria-label',`${month}月${num}日 ${day?yenS(day.net):weekend?'休場':'データなし'}`);
+    b.innerHTML=`${num}<small>${day?`<span class="desktop-amount">${yenS(day.net)}</span><span class="mobile-amount">${day.net<0?'−':'+'}${(Math.abs(day.net)/10000).toFixed(2)}万</span>`:weekend?'休場':'—'}</small>`;
+    b.onclick=()=>selectDate(date);cal.appendChild(b);
+  }
+  renderSchedule(current);
+}
+function renderSchedule(day){
+  const label=day.date.split('-').map(Number);
+  $('timelineTitle').textContent=`${label[1]}月${label[2]}日 ／ ${day.closed?'休場・取引なし':day.trades.length+'取引・'+day.wins+'勝'+day.losses+'敗'} ／ ${yenS(day.net)}`;
+  $('timelineEnd').textContent=`終了残高（リール表示） ${yen(day.balClose)}`;
+  const area=$('tradeTimeline');area.innerHTML='';
+  for(let pane=0;pane<day.panes;pane++){
+    const lane=document.createElement('div');lane.className='timeline-lane';lane.innerHTML=`<span class="lane-label">CH${pane+1}</span><div class="lane-track"></div>`;
+    const track=lane.lastElementChild;
+    for(const t of day.trades.filter(t=>t.pane===pane)){
+      const b=document.createElement('button');b.type='button';b.className='trade-bar'+(t.side==='S'?' sell':'');
+      b.style.left=(t.h/24*100)+'%';b.style.width=((t.x-t.h)/24*100)+'%';
+      const info=`${hhmm(t.h)}〜${hhmm(t.x)} ${t.side==='B'?'BUY':'SELL'} CH${pane+1} ${yenS(t.pnl)}`;
+      b.title=info;b.setAttribute('aria-label',info);b.onclick=()=>seekSchedule(Math.round(t.h*60),t);track.appendChild(b);
+    }
+    const cursor=document.createElement('span');cursor.className='timeline-now';track.appendChild(cursor);area.appendChild(lane);
+  }
+  const minute=clamp(Math.floor(Clock.hour()*60),0,1439);$('timeSeek').value=minute;$('seekTime').textContent=pad(Math.floor(minute/60))+':'+pad(minute%60);
+  $('tradeDetail').textContent=day.closed?'取引なし。前営業日の終了残高で停止します。':'時刻バーの位置は約定時刻、幅は決済までの保有時間です。';
+  $('tradeList').innerHTML='';
+  day.trades.forEach(t=>{const row=document.createElement('tr');row.innerHTML=`<td><button class="trade-jump">${hhmm(t.h)}→${hhmm(t.x)}</button></td><td>${t.side==='B'?'BUY':'SELL'}</td><td>CH${t.pane+1}</td><td>${yenS(t.pnl)}</td>`;row.querySelector('button').onclick=()=>seekSchedule(Math.round(t.h*60),t);$('tradeList').appendChild(row);});
+}
+function setupCalendar(){
+  $('prevMonth').onclick=()=>{const m=calendarMonths();calendarView=m[Math.max(0,m.indexOf(calendarView)-1)];renderCalendar();};
+  $('nextMonth').onclick=()=>{const m=calendarMonths();calendarView=m[Math.min(m.length-1,m.indexOf(calendarView)+1)];renderCalendar();};
+  $('todayLive').onclick=()=>{CFG.mode='live';CFG.day='auto';CFG.date='';calendarView='';Clock.paused=false;Clock._closed=null;saveCfg();Clock.init();resetSeen();segSync();};
+  $('timeSeek').oninput=e=>seekSchedule(Number(e.target.value),null,false);
+  $('timeSeek').onchange=e=>seekSchedule(Number(e.target.value),null,true);
+}
+
+function segInit(id,key,cb){ const el=$(id); el.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{ CFG[key]=isNaN(+b.dataset.v)||b.dataset.v==='auto'||b.dataset.v==='random'?b.dataset.v:+b.dataset.v; if(key==='mode'&&b.dataset.v==='live'){CFG.day='auto';CFG.date='';calendarView='';Clock.paused=false;} if(key==='panes'&&(b.dataset.v==='auto'||b.dataset.v==='random')) CFG[key]=b.dataset.v; saveCfg(); cb&&cb(); segSync(); }; }); }
 function segSync(){ for(const [id,key] of [['segAcct','acct'],['segMode','mode'],['segSpeed','speed'],['segPanes','panes'],['segLayout','layout'],['segLabels','labels'],['segCw','cw']]) $(id).querySelectorAll('button').forEach(b=>b.classList.toggle('on',String(b.dataset.v)===String(CFG[key])));
-  $('segDay').querySelectorAll('button').forEach(b=>b.classList.toggle('on',String(b.dataset.v)===String(CFG.day)));
+  renderCalendar();
   $('secReplay').style.opacity=CFG.mode==='replay'?1:.4; $('btnPause').textContent=Clock.paused?'▶ 再開':'⏸ 一時停止'; }
 function setupCfg(){
   $('segAcct').innerHTML=ACCOUNTS.map(a=>`<button data-v="${a.id}">${a.label}</button>`).join('');
   segInit('segAcct','acct',()=>{ switchAccount(); });
-  const sd=$('segDay'); sd.innerHTML='<button data-v="auto">AUTO（今日）</button>'+DAYS.map(d=>`<button data-v="${d.day}">${d.day}日目<br><span style="font-size:9px;color:var(--dim)">${d.date.slice(5)}</span></button>`).join('');
-  segInit('segMode','mode',()=>{ if(CFG.mode==='live') CFG.day='auto'; saveCfg(); Clock.init(); resetSeen(); }); segInit('segSpeed','speed'); segInit('segPanes','panes'); segInit('segLayout','layout',()=>{ lastN=0; }); segInit('segLabels','labels',buildTape); segInit('segCw','cw');
-  segInit('segDay','day',()=>{ CFG.mode=(CFG.day==='auto')?'live':'replay'; saveCfg(); Clock.init(); resetSeen(); });
-  $('segDay').querySelectorAll('button').forEach(b=>b.classList.toggle('on',String(b.dataset.v)===String(CFG.day)));
-  $('inT').value=CFG.t; $('inT').onchange=e=>{ CFG.t=e.target.value; CFG.mode='replay'; if(CFG.day==='auto') CFG.day=Clock.day().day; saveCfg(); Clock.init(); resetSeen(); };
-  $('btnPause').onclick=()=>{ Clock.paused=!Clock.paused; segSync(); };
-  $('gearBtn').onclick=()=>{ $('cfg').classList.add('open'); $('gearBtn').classList.add('on'); segSync(); }; $('cfgClose').onclick=closeCfg; $('cfg').onclick=e=>{ if(e.target.id==='cfg') closeCfg(); };
-  segSync(); }
+  segInit('segMode','mode',()=>{ if(CFG.mode==='live'){ CFG.day='auto'; CFG.date=''; calendarView=''; Clock.paused=false; } saveCfg(); Clock.init(); resetSeen(); }); segInit('segSpeed','speed'); segInit('segPanes','panes'); segInit('segLayout','layout',()=>{ lastN=0; }); segInit('segLabels','labels',buildTape); segInit('segCw','cw');
+  $('inT').value=CFG.t; $('inT').onchange=e=>{ CFG.t=e.target.value; CFG.mode='replay'; if(CFG.day==='auto') CFG.day=Clock.day().day; saveCfg(); Clock.init(); Clock.paused=false; resetSeen(); segSync(); };
+  $('btnPause').onclick=()=>{ Clock.last=performance.now();Clock.paused=!Clock.paused; segSync(); };
+  $('histLink').onclick=()=>{const q=new URLSearchParams({acct:CFG.acct,asof:Clock.day().date});$('histLink').href='history/index.html?'+q;};
+  $('gearBtn').onclick=()=>{ $('cfg').classList.add('open');document.querySelector('#cfg .modal').scrollTop=0; $('gearBtn').classList.add('on'); segSync(); }; $('cfgClose').onclick=closeCfg; $('cfg').onclick=e=>{ if(e.target.id==='cfg') closeCfg(); };
+  setupCalendar(); segSync(); }
+function syncScheduleClock(hour){
+  if(!$('cfg').classList.contains('open'))return;
+  const mins=clamp(Math.floor(hour*60),0,1439);
+  if(document.activeElement!==$('timeSeek'))$('timeSeek').value=mins;
+  $('seekTime').textContent=pad(Math.floor(hour))+':'+pad(mins%60)+':'+pad(Math.floor(hour*3600)%60);
+  document.querySelectorAll('.timeline-now').forEach(el=>el.style.left=(hour/24*100)+'%');
+  $('btnPause').textContent=Clock.paused?'▶ 再開':'⏸ 一時停止';
+}
 function closeCfg(){ $('cfg').classList.remove('open'); $('gearBtn').classList.remove('on'); }
 /* 口座を入れ替える。日付の並びは両口座で同じなので、見ている日はそのまま引き継ぐ。
    休場日のキャッシュだけは前の口座の残高を持っているので必ず捨てる。 */
-function switchAccount(){ useAccount(); Clock._closed=null; Clock.syncDay(); resetSeen(); }
-function resetSeen(){ seenEnter=new Set(); seenExit=new Set(); feed=[]; lastFeedMin=-1; lastFills=-1; lastRealized=null; lastDayId=''; lastPanelT=0; }
+function switchAccount(){ useAccount(); Clock._closed=null; Clock.syncDay(); resetSeen(); renderCalendar(); }
+function resetSeen(){ for(const p of panes)p.live={i:-1,hi:0,lo:0};lastOpenKeys=''; seenEnter=new Set(); seenExit=new Set(); feed=[]; lastFeedMin=-1; lastFills=-1; lastRealized=null; lastDayId=''; lastPanelT=0; }
 const SPEEDS=[1,5,7,10,60,240,600];
-document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT') return; const k=e.key.toLowerCase();
+document.addEventListener('keydown',e=>{ if(['INPUT','BUTTON','SELECT','SUMMARY'].includes(e.target.tagName)) return; const k=e.key.toLowerCase();
   if(k==='1'||k==='2'||k==='3'){ CFG.panes=+k; } else if(k==='0'){ CFG.panes='auto'; } else if(k==='r'){ CFG.panes='random'; }
-  else if(k==='['||k===']'){ const cur=Clock.day().day; const nx=clamp(cur+(k===']'?1:-1),DAYS[0].day,DAYS[DAYS.length-1].day); CFG.day=nx; CFG.mode='replay'; Clock.init(); resetSeen(); }
-  else if(k==='l'){ CFG.mode=CFG.mode==='live'?'replay':'live'; if(CFG.mode==='replay'&&CFG.day==='auto') CFG.day=Clock.day().day; Clock.init(); resetSeen(); }
+  else if(k==='['||k===']'){ const cur=Clock.day().day; const nx=clamp(cur+(k===']'?1:-1),DAYS[0].day,DAYS[DAYS.length-1].day); CFG.day=nx; CFG.date=''; CFG.mode='replay'; calendarView=''; Clock.init(); resetSeen(); }
+  else if(k==='l'){ CFG.mode=CFG.mode==='live'?'replay':'live'; if(CFG.mode==='live'){CFG.day='auto';CFG.date='';calendarView='';Clock.paused=false;} if(CFG.mode==='replay'&&CFG.day==='auto') CFG.day=Clock.day().day; Clock.init(); resetSeen(); }
   else if(k===' '){ e.preventDefault(); Clock.paused=!Clock.paused; }
   else if(k==='-'||k==='+'||k==='='){ const i=SPEEDS.indexOf(CFG.speed); const j=clamp((i<0?2:i)+(k==='-'?-1:1),0,SPEEDS.length-1); CFG.speed=SPEEDS[j]; }
   else if(k==='g'){ $('cfg').classList.toggle('open'); $('gearBtn').classList.toggle('on'); }
@@ -725,7 +837,7 @@ function loop(){ Clock.tick(); const day=Clock.day(); const hour=Clock.hour(); c
   for(const P of panes) drawPane(P,day,hour,acc);
   if($('brain').clientWidth>0) drawBrain();
   fireEvents(day,hour);
-  const now=performance.now(); if(now-lastPanelT>200){ lastPanelT=now; tickPanels(day,hour,acc); updateTabsHot(acc); }
+  const now=performance.now(); if(now-lastPanelT>200){ lastPanelT=now; tickPanels(day,hour,acc); updateTabsHot(acc);syncScheduleClock(hour); }
   requestAnimationFrame(loop); }
 useAccount();
 if(!DAYS.length){ document.body.innerHTML='<div style="padding:40px;color:#ff5f5f;font-family:monospace">data.js がありません。python build_data.py を実行してください。</div>'; }
