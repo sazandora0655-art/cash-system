@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """取引履歴サイトのデータを書き出す。
 
-既定では ../data.js の2026-09-01以降を、両口座とも変更せず使用する。
+企画口座は100万円で開始した2026-08-24から、メイン口座は従来の過去2年分から表示する。
+2026-09-01以降は両口座とも ../data.js の取引と完全一致。
 画面の「今日として扱う日付」まで表示する。元データは物語用のシミュレーション設定。
-過去2年の生成関数は旧設定の参照用として残しているが、既定のmain()からは呼ばない。
+過去2年の生成履歴と2026-08-24以降の既存取引を、元の設定どおり連結する。
 INPUT_CSVがある場合の読み込み経路は維持。
 """
 import json, sys, io, math, random, csv
@@ -467,24 +468,23 @@ def main():
                          "note": INPUT_CSV.name, "rows": rows})
         print("CSVから %d件 読み込みました" % len(rows))
     else:
-        data = load_plan_days()
-        for account in data:
-            days = [d for d in account['days'] if d['date'] >= '2026-09-01']
-            if not days:
-                continue
-            account = dict(account, days=days)
-            accounts.append({
-                'id': account['id'],
-                'label': '企画口座' if account['id']=='plan' else 'メイン口座',
-                'deposit': days[0]['balOpen'],
-                'note': '2026-09-01以降のシミュレーション設定。稼働画面と同じ取引。',
-                'rows': rows_from_account(account),
-            })
+        by = {a['id']: a for a in load_plan_days()}
+        historical = rows_from_generated(generate())
+        plan_rows = rows_from_account(by['plan'])
+        main_rows = rows_from_account(by['main'])
+        assert by['plan']['days'][0]['balOpen'] == 1_000_000
+        assert historical[-1][6] == by['main']['days'][0]['balOpen']
+        accounts = [
+            dict(id='plan', label='企画口座', deposit=1_000_000,
+                 note='2026-08-24、100万円で企画開始。シミュレーション設定。', rows=plan_rows),
+            dict(id='main', label='メイン口座', deposit=DEPOSIT,
+                 note='従来の過去2年分＋稼働画面と共通の取引。シミュレーション設定。', rows=historical+main_rows),
+        ]
 
     js = (
         "// 自動生成: python build_history.py （手で編集しない）\n"
         "// 2026-08-24以降は ../data.js の取引そのもの＝AIトレード画面・台本と1円も違わない。\n"
-        "// 表示対象は2026-09-01以降。シミュレーション設定データ（seed=%d）。\n"
+        "// 企画は100万円開始から、メインは過去2年分から。シミュレーション設定データ（seed=%d）。\n"
         "// fmt: [約定, 決済, 板, 売買(0=BUY 1=SELL), ロット, 損益, 決済後の残高]  時刻は %s からの分\n"
         % (SEED, BASE_DT.strftime("%Y-%m-%d %H:%M")) +
         "window.EVE_HISTORY = {\n"
