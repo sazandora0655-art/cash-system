@@ -234,12 +234,19 @@ input[type=file]{display:none}
   table.tr td:first-child{padding-left:11px} table.tr td:last-child{padding-right:11px}
 }
 select,input[type=date]{font:inherit;font-size:14px;color:var(--txt);background:var(--card2);border:1px solid var(--line2);border-radius:6px;padding:10px;max-width:100%;margin:6px 0}#accountSelect{width:100%}
+/* ═══════════════ バックテストの口座（ApexGrid）だけに出す目印 ═══════════════ */
+.badge{font-size:10.5px;font-weight:700;letter-spacing:.04em;color:var(--acc);background:var(--accbg);
+  border:1px solid var(--accline);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.acap{margin:12px 14px 0;padding:8px 11px;border:1px solid var(--accline);background:var(--accbg);border-radius:7px;
+  font-size:11.5px;line-height:1.7;color:var(--txt)}
+.badge[hidden],.acap[hidden],.legend [hidden]{display:none}
 </style>
 </head>
 <body>
 
 <header id="hdr">
   <h1>取引履歴</h1>
+  <span class="badge" id="acctBadge" hidden></span>
   <div class="hgap"></div>
   <button class="iconb" id="gearBtn" aria-label="設定" title="設定">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
@@ -252,7 +259,7 @@ select,input[type=date]{font:inherit;font-size:14px;color:var(--txt);background:
 <div class="wrap">
 
   <div class="card" style="margin-bottom:12px">
-    
+    <div class="acap" id="acctCap" hidden></div>
     <div class="summary">
       <div class="lb">残高</div>
       <div class="bal num" id="bal"><span class="cur">¥</span>—</div>
@@ -277,6 +284,7 @@ select,input[type=date]{font:inherit;font-size:14px;color:var(--txt);background:
         <div class="cwrap"><canvas id="eq" height="250"></canvas><div class="tip" id="eqTip"></div></div>
         <div class="legend">
           <span><i style="background:var(--eq)"></i>残高</span>
+          <span id="eqLowLeg" hidden><i style="background:var(--sell)"></i>含み損を入れた金額（最低）</span>
           <span><i style="background:var(--line2)"></i>元本</span>
           <span id="eqNote"></span>
         </div>
@@ -365,6 +373,7 @@ select,input[type=date]{font:inherit;font-size:14px;color:var(--txt);background:
 
     <div class="note">
       企画口座は100万円での開始時から、メイン口座は過去2年分から表示。9月1日以降は稼働画面と同じ取引設定。<br>
+      ApexGrid はEAのバックテスト（過去の値動きでの計算。25万円・2018年1月から）。実際の口座の成績ではありません。<br>
       URL: <span style="color:var(--txt)">?acct=main&amp;asof=2026-09-11&amp;range=1y&amp;theme=dark</span>
     </div>
     <button class="close" id="cfgClose">閉じる</button>
@@ -372,6 +381,7 @@ select,input[type=date]{font:inherit;font-size:14px;color:var(--txt);background:
 </div>
 
 <script src="history.js"></script>
+<script src="apexgrid.js"></script><!-- 3つ目の口座＝ApexGrid（バックテスト）。build_apexgrid.py が作る。無くても他の口座は動く -->
 <script>
 'use strict';
 
@@ -410,12 +420,20 @@ const MIN=60000;
 const toDate=m=>new Date(BASE.getTime()+m*MIN);
 const WD=['日','月','火','水','木','金','土'];
 
-let ACCT=null, ALL=[], DAYS=[], VIEW=[], VDAYS=[], STAT={};
+let ACCT=null, ALL=[], DAYS=[], VIEW=[], VDAYS=[], STAT={}, EQ=null;
+
+/* 口座ごとの違い（ApexGrid＝バックテストの口座だけが持つ項目。企画・メインは今までどおり）
+   chLabels: 板の名前（通貨ペア名） / lotDp: ロットの小数の桁 / hours24: 24時間・土曜の朝まで取引がある
+   eq: 日ごとの「含み損を入れた金額」の最低 → 資産推移に線を足し、落ち込みを含み損込みで出す */
+function chName(i){ return (ACCT&&ACCT.chLabels&&ACCT.chLabels[i]) || 'CH'+(i+1); }
+function chCount(){ return (ACCT&&ACCT.chLabels)? ACCT.chLabels.length : 3; }
+function chWord(){ return (ACCT&&ACCT.chWord) || '板'; }
 
 function pickAccount(){
   ACCT = SRC.accounts.find(a=>a.id===CFG.acct) || SRC.accounts[0];
   if(!ACCT) return;
   CFG.acct=ACCT.id;
+  EQ = Array.isArray(ACCT.eq)&&ACCT.eq.length? ACCT.eq.slice().sort((a,b)=>a[0]-b[0]) : null;
   ALL = (ACCT.rows||[]).map(r=>{
     const dIn=toDate(r[0]), dOut=toDate(r[1]);
     return {in:dIn, out:dOut, ch:r[2], side:r[3], lots:r[4], pnl:r[5], bal:r[6],
@@ -450,6 +468,15 @@ function buildStats(){
   const gw=wins.reduce((s,r)=>s+r.pnl,0), gl=-loss.reduce((s,r)=>s+r.pnl,0);
   let peak=dep, dd=0, ddp=0;
   for(const r of VIEW){ peak=Math.max(peak,r.bal); const d=peak-r.bal; if(d>dd){dd=d;ddp=d/peak;} }
+  if(EQ){
+    // 含み損を入れた金額: 決済が無かった日の分は、次に決済があった日にまとめる（その間の最低）
+    let j=0;
+    for(const d of DAYS){ let lo=Infinity; while(j<EQ.length && EQ[j][0]<=d.key){ lo=Math.min(lo,EQ[j][1]); j++; } d.eq=Math.min(isFinite(lo)?lo:d.bal, d.bal); }
+    // 落ち込みは「それまでの残高の最高値 → 含み損を入れた最低」で測る（決済済みの残高だけで測ると浅く見えるため）。
+    // 残高が何十倍にもなる口座なので、％は「いちばん大きい割合」を出す（金額がいちばん大きい時の割合ではなく）
+    let pk=dep; dd=0; ddp=0;
+    for(const d of DAYS){ const x=pk-d.eq; if(x>dd) dd=x; if(pk>0 && x/pk>ddp) ddp=x/pk; for(const r of d.rows) pk=Math.max(pk,r.bal); }
+  }
   let best=0,worst=0,cw=0,cl=0;
   for(const r of VIEW){ if(r.pnl>=0){cw++;cl=0;best=Math.max(best,cw);} else {cl++;cw=0;worst=Math.max(worst,cl);} }
   const bal=VIEW.length?VIEW[VIEW.length-1].bal:dep;
@@ -466,7 +493,7 @@ function buildStats(){
     pf: gl? gw/gl : 0, avgW: wins.length? gw/wins.length:0, avgL: loss.length? gl/loss.length:0,
     dd, ddp, best, worst, days:DAYS.length,
     hold: VIEW.length? holds/VIEW.length : 0, max:mx, min:mn,
-    moN:mos.size, moW, rf: dd? (bal-dep)/dd : 0, riskAvg,
+    moN:mos.size, moW, rf: dd? (bal-dep)/dd : 0, riskAvg, hasEq:!!EQ,
     from:DAYS.length?DAYS[0].date:null, to:DAYS.length?DAYS[DAYS.length-1].date:null,
     dayW:DAYS.filter(d=>d.pnl>=0).length };
 }
@@ -485,7 +512,8 @@ function hm(d){ return two(d.getHours())+':'+two(d.getMinutes()); }
 function ymd(d){ return d.getFullYear()+'/'+two(d.getMonth()+1)+'/'+two(d.getDate()); }
 function md(d){ return (d.getMonth()+1)+'/'+d.getDate(); }
 function ym(d){ return String(d.getFullYear()).slice(2)+'/'+(d.getMonth()+1); }
-function holdTxt(m){ return m>=60? Math.floor(m/60)+'時間'+(m%60?two(m%60)+'分':'') : m+'分'; }
+function holdTxt(m){ if(m>=2880) return Math.floor(m/1440)+'日'+Math.floor(m%1440/60)+'時間';
+  return m>=60? Math.floor(m/60)+'時間'+(m%60?two(m%60)+'分':'') : m+'分'; }
 const cls=n=>n>0?'pos':n<0?'neg':'flat';
 
 /* ═════════ 4. サマリー ═════════ */
@@ -496,13 +524,16 @@ function renderHead(){
   const g=STAT.dep? STAT.net/STAT.dep : 0;
   p.textContent=(g>=0?'+':'−')+pct(Math.abs(g));
   p.className='gpill num '+(g>=0?'up':'dn');
+  const bd=$('acctBadge'), cp=$('acctCap');           // バックテストの口座だけ、見出しと残高の上に目印を出す
+  if(bd){ bd.hidden=!ACCT.badge; bd.textContent=ACCT.badge||''; }
+  if(cp){ cp.hidden=!ACCT.caption; cp.textContent=ACCT.caption||''; }
   const k=[
     ['取引回数', nf.format(STAT.n)+'<small>回</small>', 0, '', ''],
     ['勝率', pct(STAT.wr), STAT.wr, '', 'g'],
     ['PF（損益比）', STAT.pf.toFixed(2), Math.min(1,(STAT.pf-1)/1.2), '', ''],
     ['平均利益', money(STAT.avgW), 0, 'pos', ''],
     ['平均損失', money(-STAT.avgL), 0, 'neg', ''],
-    ['最大の落ち込み', '−'+pct(STAT.ddp,1), 0, 'neg', ''],
+    [STAT.hasEq?'最大の落ち込み（含み損込み）':'最大の落ち込み', '−'+pct(STAT.ddp,1), 0, 'neg', ''],
   ];
   $('kpis').innerHTML = k.map(([a,b,bar,c,bc])=>
     '<div class="kpi"><div class="k">'+a+'</div><div class="v num '+c+'">'+b+'</div>'+
@@ -588,8 +619,11 @@ function drawEq(){
   if(!ds.length){eqPts=[];$('eqNote').textContent='該当する取引なし';return;}
   const pad={l:56,r:12,t:14,b:24};
   const open = ds[0].bal - ds[0].pnl;
-  let min=Math.min(open,...ds.map(d=>d.bal)), max=Math.max(open,...ds.map(d=>d.bal));
-  const sp=(max-min)*.10||1; min-=sp; max+=sp;
+  const withEq = STAT.hasEq;                         // 含み損を入れた金額の線（バックテストの口座だけ）
+  $('eqLowLeg').hidden = !withEq;
+  let min=Math.min(open,...ds.map(d=>withEq?Math.min(d.bal,d.eq):d.bal)), max=Math.max(open,...ds.map(d=>d.bal));
+  const sp=(max-min)*.10||1, floor0=min>=0; min-=sp; max+=sp;
+  if(floor0 && min<0) min=0;                         // 金額がマイナスでないのに軸だけマイナスにならないように
   const X=i=>pad.l+(w-pad.l-pad.r)*(i/(ds.length-1||1));
   const Y=v=>pad.t+(h-pad.t-pad.b)*(1-(v-min)/(max-min||1));
   grid(g,w,h,pad,4,axisFmt,min,max);
@@ -605,6 +639,10 @@ function drawEq(){
   ds.forEach((d,i)=>g.lineTo(X(i),Y(d.bal)));
   g.lineTo(X(ds.length-1),h-pad.b); g.closePath(); g.fill();
 
+  if(withEq){
+    g.strokeStyle=CSS('--sell'); g.lineWidth=1.1; g.lineJoin='round';
+    g.beginPath(); ds.forEach((d,i)=> i?g.lineTo(X(i),Y(d.eq)):g.moveTo(X(i),Y(d.eq))); g.stroke();
+  }
   g.strokeStyle=CSS('--eq'); g.lineWidth=1.8; g.lineJoin='round';
   g.beginPath(); ds.forEach((d,i)=> i?g.lineTo(X(i),Y(d.bal)):g.moveTo(X(i),Y(d.bal))); g.stroke();
 
@@ -625,8 +663,10 @@ function drawDd(){
   if(!ds.length){ddPts=[];return;}
   const pad={l:56,r:12,t:12,b:20};
   let peak=ds[0].bal-ds[0].pnl;
-  const xs=ds.map(d=>{ peak=Math.max(peak,d.bal); return (peak-d.bal)/peak; });
-  const mx=Math.max(0.01,...xs)*1.18;
+  const xs=ds.map(d=>{
+    if(STAT.hasEq){ const v=Math.max(0,(peak-d.eq)/peak); peak=Math.max(peak,d.bal); return v; }   // 含み損込み
+    peak=Math.max(peak,d.bal); return (peak-d.bal)/peak; });
+  const mx=Math.min(1,Math.max(0.01,...xs)*1.18);
   const X=i=>pad.l+(w-pad.l-pad.r)*(i/(ds.length-1||1));
   const Y=v=>pad.t+(h-pad.t-pad.b)*(v/mx);
   grid(g,w,h,pad,3,v=>v<=0?'0%':'−'+(v*100).toFixed(1)+'%',mx,0);
@@ -784,25 +824,27 @@ function openMonth(day){
 
 /* ═════════ 9. 取引のクセ ═════════ */
 const DISTS=[['dow','曜日'],['hour','時間帯'],['ch','板'],['size','大きさ']];
+function distItems(){ return DISTS.map(([v,l])=> v==='ch'? [v,chWord()] : [v,l]); }
+function chItems(){ const a=[['all','全'+chWord()]]; for(let i=0;i<chCount();i++) a.push([String(i),chName(i)]); return a; }
 let diBars=[];
 function distData(){
-  const k=CFG.dist;
+  const k=CFG.dist, all24=!!(ACCT&&ACCT.hours24);     // 24時間・土曜の朝まで取引がある口座（ApexGrid）
   if(k==='dow'){
-    const a=[1,2,3,4,5].map(i=>({lab:WD[i]+'曜',pnl:0,n:0,w:0}));
-    for(const r of VIEW){ const i=r.out.getDay()-1; if(i<0||i>4) continue;
+    const a=(all24?[1,2,3,4,5,6]:[1,2,3,4,5]).map(i=>({lab:WD[i]+'曜',pnl:0,n:0,w:0}));
+    for(const r of VIEW){ const i=r.out.getDay()-1; if(i<0||i>=a.length) continue;
       a[i].pnl+=r.pnl; a[i].n++; if(r.pnl>=0)a[i].w++; }
     return a;
   }
   if(k==='hour'){
-    const a=[];
-    for(let hh=9;hh<=22;hh++) a.push({lab:hh+'時', pnl:0,n:0,w:0});
-    for(const r of VIEW){ const i=r.out.getHours()-9; if(i<0||i>=a.length) continue;
+    const a=[], h0=all24?0:9, h1=all24?23:22;
+    for(let hh=h0;hh<=h1;hh++) a.push({lab:hh+'時', pnl:0,n:0,w:0});
+    for(const r of VIEW){ const i=r.out.getHours()-h0; if(i<0||i>=a.length) continue;
       a[i].pnl+=r.pnl; a[i].n++; if(r.pnl>=0)a[i].w++; }
     return a.filter(o=>o.n);
   }
   if(k==='ch'){
-    const a=[0,1,2].map(i=>({lab:'CH'+(i+1),pnl:0,n:0,w:0}));
-    for(const r of VIEW){ const i=Math.max(0,Math.min(2,r.ch)); a[i].pnl+=r.pnl; a[i].n++; if(r.pnl>=0)a[i].w++; }
+    const n=chCount(), a=[]; for(let i=0;i<n;i++) a.push({lab:chName(i),pnl:0,n:0,w:0});
+    for(const r of VIEW){ const i=Math.max(0,Math.min(n-1,r.ch)); a[i].pnl+=r.pnl; a[i].n++; if(r.pnl>=0)a[i].w++; }
     return a.filter(o=>o.n);
   }
   const cap=STAT.avgL||1;
@@ -839,7 +881,7 @@ function drawDi(){
   a.forEach((o,i)=>{ if(i%step===0) g.fillText(o.lab,pad.l+bw*(i+.5),h-pad.b+6); });
   $('diNote').textContent = CFG.dist==='hour'? '決済した時刻ごとの損益'
     : CFG.dist==='size'? '1回の損益 ÷ 平均損失（R）ごとの回数'
-    : CFG.dist==='ch'? '板ごとの損益' : '曜日ごとの損益';
+    : CFG.dist==='ch'? chWord()+'ごとの損益' : '曜日ごとの損益';
 }
 
 /* ═════════ 10. ツールチップ ═════════ */
@@ -870,6 +912,7 @@ function tipEq(x){
   return '<div class="d">'+ymd(d.date)+'（'+WD[d.date.getDay()]+'）</div>'+
     '<b class="num">'+ (CFG.money==='pct'? pct(d.bal/(STAT.dep||1),1) : '¥'+nf.format(d.bal)) +'</b> '+
     '<span class="num '+cls(d.pnl)+'" style="font-weight:600">'+money(d.pnl,true)+'</span><br>'+
+    (STAT.hasEq&&d.eq<d.bal? '<span class="d">含み損を入れると '+(CFG.money==='pct'? pct(d.eq/(STAT.dep||1),1) : '¥'+nf.format(d.eq))+'</span><br>' : '')+
     '<span class="d">'+d.rows.length+'回 '+d.w+'勝'+d.l+'敗</span>';
 }
 function tipBars(bars,x){
@@ -915,8 +958,8 @@ function dayHTML(d){
     return '<tr>'+
       '<td class="tm num">'+hm(r.out)+'</td>'+
       (slim?'':'<td><span class="side '+(r.side?'S':'B')+'">'+(r.side?'売':'買')+'</span></td>'+
-        '<td class="ch3">CH'+(r.ch+1)+'</td>'+
-        '<td class="num" style="color:var(--dim)">'+(r.lots?r.lots.toFixed(1):'—')+'</td>'+
+        '<td class="ch3">'+chName(r.ch)+'</td>'+
+        '<td class="num" style="color:var(--dim)">'+(r.lots?r.lots.toFixed(ACCT.lotDp||1):'—')+'</td>'+
         '<td class="hold num">'+holdTxt(r.hold)+'</td>')+
       '<td class="pl num '+c+'">'+money(r.pnl,true)+'</td>'+
       '<td class="balc num">'+nf.format(r.bal)+'</td>'+
@@ -988,7 +1031,13 @@ function seg(el,items,key,after){
 /* ═════════ 13. 描画 ═════════ */
 function drawAll(){ drawEq(); drawDd(); drawMo(); drawDi(); drawCal(); }
 function renderAll(){
-  pickAccount(); buildStats(); renderHead();
+  pickAccount();
+  // 板の名前と数は口座で違う（企画・メイン＝CH1〜3／ApexGrid＝通貨ペア4つ）ので、選ぶボタンを作り直す
+  if(CFG.ch!=='all' && +CFG.ch>=chCount()){ CFG.ch='all'; save(); }
+  seg($('segDist'),distItems(),'dist',drawDi);
+  seg($('segCh'),chItems(),'ch',()=>{syncFilt();renderHist(true);});
+  syncFilt();
+  buildStats(); renderHead();
   calY=null; calM=null;                         // 口座を替えたらカレンダーも最新月へ
   drawAll(); renderHRange(); renderHist(true); syncCfg();
 }
