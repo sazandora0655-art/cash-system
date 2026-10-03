@@ -96,6 +96,7 @@ header h1{font-size:15px;font-weight:700;letter-spacing:.02em}
 .kpi .k{font-size:10.5px;color:var(--dim);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .kpi .v{font-size:16px;font-weight:700;margin-top:3px;letter-spacing:-.01em}
 .kpi .v small{font-size:11px;color:var(--dim);font-weight:500;margin-left:2px}
+.kpi .v.long{font-size:14px}
 .kpi .bar{height:4px;border-radius:2px;background:var(--line);margin-top:7px;overflow:hidden}
 .kpi .bar i{display:block;height:100%;background:var(--acc);border-radius:2px}
 .kpi .bar.g i{background:var(--pos)}
@@ -535,8 +536,8 @@ function renderHead(){
     ['平均損失', money(-STAT.avgL), 0, 'neg', ''],
     [STAT.hasEq?'最大の落ち込み（含み損込み）':'最大の落ち込み', '−'+pct(STAT.ddp,1), 0, 'neg', ''],
   ];
-  $('kpis').innerHTML = k.map(([a,b,bar,c,bc])=>
-    '<div class="kpi"><div class="k">'+a+'</div><div class="v num '+c+'">'+b+'</div>'+
+  $('kpis').innerHTML = k.map(([a,b,bar,c,bc])=>       // 10文字以上の値（−2,871,523 など）は少し小さく＝スマホ幅で3列からはみ出さない
+    '<div class="kpi"><div class="k">'+a+'</div><div class="v num '+c+(b.replace(/<[^>]*>/g,'').length>=10?' long':'')+'">'+b+'</div>'+
       (bar? '<div class="bar '+bc+'"><i style="width:'+Math.max(4,Math.min(100,bar*100))+'%"></i></div>':'')+'</div>'
   ).join('');
   renderDetail();
