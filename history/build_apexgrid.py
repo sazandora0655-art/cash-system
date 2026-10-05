@@ -10,12 +10,14 @@
 ・history.js とは別のファイルにしてあるので、build_history.py を叩き直しても消えない。
   index.html が history.js のあとに apexgrid.js を読み、window.EVE_HISTORY.accounts に1口座足す。
 ・企画口座・メイン口座の数字には一切さわらない。
+・2026-10-05: 元データが終わった先（10/2〜10/9）に apexgrid_extra.py の取引を足す（さとるの依頼「10/9 時点で 451,539,031 円」）。
+  値動きからの計算ではなく、着地点に合わせて EA のルールの形で作ったもの。元データの最後がその前提と違えば足さない。
 
-  python build_apexgrid.py [v2_8y_data.json の場所]
+  python build_apexgrid.py [v2_8y_data.json の場所] [--no-extra（足さずに作る）]
 """
 import json, sys, io
 from pathlib import Path
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 HERE = Path(__file__).resolve().parent
@@ -28,27 +30,45 @@ OFF = (SITE_BASE - DATA_BASE).days * 1440
 
 
 def main():
-    src = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_SRC
+    args = [a for a in sys.argv[1:] if a != "--no-extra"]
+    src = Path(args[0]) if args else DEFAULT_SRC
     D = json.loads(src.read_text(encoding="utf-8"))
     S, M = D["sum"], D["meta"]
-    rows = []
+    rows, still_open = [], []
     for t in D["T"]:
         pair, side, t_in, t_out, levels, lots, pips, jpy, swap, reason, bal = t[:11]
         if D["reasons"][reason] == "end":      # まだ決済していない取引は載せない（残高に入っていない）
+            still_open.append([pair, side, t_in - OFF, lots])
             continue
         rows.append([t_in - OFF, t_out - OFF, pair, side, lots, jpy, bal])
     rows.sort(key=lambda r: r[1])
     assert rows[-1][6] == S["bal"] and rows[0][6] - rows[0][5] == S["cap"]
-    b = S["cap"]
-    for r in rows:
-        b += r[5]; assert b == r[6]            # 残高＝元本＋損益の積み上げ（1円もズレない）
     eq = []
     for d in D["D"]:
         dt = DATA_BASE + timedelta(days=d[0])
         eq.append([dt.year * 10000 + dt.month * 100 + dt.day, min(d[7], d[6])])   # その日の「含み損を入れた金額」の最低
+    d_to = DATA_BASE + timedelta(days=(S["last_t"] - 1) // 1440)
+    # 元データの先に足す取引（apexgrid_extra.py）。元データの最後の残高・持ったままの取引が前提どおりの時だけ足す
+    X = None
+    if "--no-extra" not in sys.argv:
+        import apexgrid_extra
+        X = apexgrid_extra.build(S["bal"], rows[-1][1], still_open)
+        if X is None:
+            print("（apexgrid_extra.py の取引は足していません: 元データの最後が前提と違う。元データを作り直したなら、追加分は見直し）")
+    if X:
+        rows += X["rows"]
+        eqd = dict(eq)
+        for k, v in X["eq"]:
+            eqd[k] = min(v, eqd.get(k, v))
+        eq = [[k, eqd[k]] for k in sorted(eqd)]
+        assert min(v for k, v in X["eq"]) > S["low"]          # いちばん減った時・最大の落ち込みは元データのまま
+        d_to = X["last"]
+    b = S["cap"]
+    for r in rows:
+        b += r[5]; assert b == r[6]            # 残高＝元本＋損益の積み上げ（1円もズレない）
     wins = [r[5] for r in rows if r[5] > 0]; loss = [r[5] for r in rows if r[5] < 0]
-    first = DATA_BASE + timedelta(minutes=S["first_t"]); last = DATA_BASE + timedelta(minutes=S["last_t"])
-    d_from = DATA_BASE + timedelta(days=S["first_t"] // 1440); d_to = DATA_BASE + timedelta(days=(S["last_t"] - 1) // 1440)
+    first = DATA_BASE + timedelta(minutes=S["first_t"]); last = datetime(2024, 9, 2) + timedelta(minutes=rows[-1][1])
+    d_from = DATA_BASE + timedelta(days=S["first_t"] // 1440)
     g = M.get("guard_pct", 0)
     nocap = M.get("lot_cap", 1.0) > 1.0
     acct = dict(
@@ -68,6 +88,7 @@ def main():
           "// ApexGrid（有料版EA）のバックテスト。過去の値動きでの計算で、実際の口座の成績ではない。\n"
           f"// {S['cap']:,}円・追加入金なし・{d_from} 〜 {d_to}（日本時間）。元データ: システム関連/20_ApexGrid…/ツール/{src.name}（作成 {M['made']}）\n"
           f"// 1回目のロット: 残高{M['ref']:,}円ごとに0.01・{'上限なし' if nocap else '上限 %.2f' % M.get('lot_cap', 1.0)}。安全装置: {('含み損が残高の%g%%で全部決済' % g) if g else 'なし'}\n"
+          + (f"// 最後の{len(X['rows'])}件（〜{X['last']}）は apexgrid_extra.py で足したもの。値動きからの計算ではなく、{X['last']} の残高を {X['rows'][-1][6]:,}円に合わせて作った\n" if X else "") +
           "// rows: [約定, 決済, ペア, 売買(0=BUY 1=SELL), ロット, 損益, 決済後の残高]  時刻は history.js と同じ 2024-09-02 00:00 からの分（昔の取引は負の数）\n"
           "// eq:   [日付(yyyymmdd), その日の「含み損を入れた金額」の最低]\n"
           "(function(){\n"
