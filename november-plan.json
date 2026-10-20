@@ -1,0 +1,2181 @@
+{
+  "month": "2026-11",
+  "status": "confirmed",
+  "kind": "simulation",
+  "openingBalance": 1832312,
+  "closingBalance": 3034195,
+  "mainReturnFraction": 0.5,
+  "days": [
+    {
+      "date": "2026-11-02",
+      "net": 54180,
+      "wins": 7,
+      "losses": 3,
+      "panes": 2,
+      "cap": 10993,
+      "balOpen": 1832312,
+      "balClose": 1886492,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:03",
+          "exit": "09:25",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 4685,
+          "balAfter": 1836997
+        },
+        {
+          "entry": "10:29",
+          "exit": "10:37",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 1115,
+          "balAfter": 1838112
+        },
+        {
+          "entry": "12:04",
+          "exit": "12:33",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 2164,
+          "balAfter": 1840276
+        },
+        {
+          "entry": "13:23",
+          "exit": "13:42",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -5152,
+          "balAfter": 1835124
+        },
+        {
+          "entry": "14:59",
+          "exit": "15:06",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 14286,
+          "balAfter": 1849410
+        },
+        {
+          "entry": "16:20",
+          "exit": "16:46",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 28189,
+          "balAfter": 1877599
+        },
+        {
+          "entry": "17:55",
+          "exit": "18:25",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 1320,
+          "balAfter": 1878919
+        },
+        {
+          "entry": "19:18",
+          "exit": "19:41",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 25679,
+          "balAfter": 1904598
+        },
+        {
+          "entry": "20:43",
+          "exit": "20:57",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -9009,
+          "balAfter": 1895589
+        },
+        {
+          "entry": "22:14",
+          "exit": "22:29",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": -9097,
+          "balAfter": 1886492
+        }
+      ]
+    },
+    {
+      "date": "2026-11-03",
+      "net": -21860,
+      "wins": 2,
+      "losses": 8,
+      "panes": 2,
+      "cap": 11318,
+      "balOpen": 1886492,
+      "balClose": 1864632,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:05",
+          "exit": "09:24",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -5551,
+          "balAfter": 1880941
+        },
+        {
+          "entry": "10:35",
+          "exit": "10:46",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 20324,
+          "balAfter": 1901265
+        },
+        {
+          "entry": "12:04",
+          "exit": "12:12",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -9038,
+          "balAfter": 1892227
+        },
+        {
+          "entry": "13:24",
+          "exit": "13:38",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": -5289,
+          "balAfter": 1886938
+        },
+        {
+          "entry": "14:59",
+          "exit": "15:19",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -9002,
+          "balAfter": 1877936
+        },
+        {
+          "entry": "16:20",
+          "exit": "16:37",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -5296,
+          "balAfter": 1872640
+        },
+        {
+          "entry": "17:47",
+          "exit": "17:54",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -10645,
+          "balAfter": 1861995
+        },
+        {
+          "entry": "19:16",
+          "exit": "19:47",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 12100,
+          "balAfter": 1874095
+        },
+        {
+          "entry": "20:46",
+          "exit": "20:59",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -4408,
+          "balAfter": 1869687
+        },
+        {
+          "entry": "22:11",
+          "exit": "22:26",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": -5055,
+          "balAfter": 1864632
+        }
+      ]
+    },
+    {
+      "date": "2026-11-04",
+      "net": 88740,
+      "wins": 8,
+      "losses": 3,
+      "panes": 2,
+      "cap": 11187,
+      "balOpen": 1864632,
+      "balClose": 1953372,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:03",
+          "exit": "09:11",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -6952,
+          "balAfter": 1857680
+        },
+        {
+          "entry": "10:27",
+          "exit": "10:48",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 25553,
+          "balAfter": 1883233
+        },
+        {
+          "entry": "11:46",
+          "exit": "12:15",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -8000,
+          "balAfter": 1875233
+        },
+        {
+          "entry": "13:03",
+          "exit": "13:25",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 8172,
+          "balAfter": 1883405
+        },
+        {
+          "entry": "14:21",
+          "exit": "14:31",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 913,
+          "balAfter": 1884318
+        },
+        {
+          "entry": "15:38",
+          "exit": "15:47",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 22632,
+          "balAfter": 1906950
+        },
+        {
+          "entry": "16:54",
+          "exit": "17:16",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -8759,
+          "balAfter": 1898191
+        },
+        {
+          "entry": "18:20",
+          "exit": "18:41",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 13392,
+          "balAfter": 1911583
+        },
+        {
+          "entry": "19:40",
+          "exit": "19:56",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 26674,
+          "balAfter": 1938257
+        },
+        {
+          "entry": "20:57",
+          "exit": "21:15",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 1362,
+          "balAfter": 1939619
+        },
+        {
+          "entry": "22:13",
+          "exit": "22:44",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 13753,
+          "balAfter": 1953372
+        }
+      ]
+    },
+    {
+      "date": "2026-11-05",
+      "net": 63520,
+      "wins": 9,
+      "losses": 2,
+      "panes": 1,
+      "cap": 11720,
+      "balOpen": 1953372,
+      "balClose": 2016892,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:07",
+          "exit": "09:30",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 14140,
+          "balAfter": 1967512
+        },
+        {
+          "entry": "10:26",
+          "exit": "10:36",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 20512,
+          "balAfter": 1988024
+        },
+        {
+          "entry": "11:39",
+          "exit": "11:59",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 1916,
+          "balAfter": 1989940
+        },
+        {
+          "entry": "13:05",
+          "exit": "13:37",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 3482,
+          "balAfter": 1993422
+        },
+        {
+          "entry": "14:16",
+          "exit": "14:46",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -5339,
+          "balAfter": 1988083
+        },
+        {
+          "entry": "15:35",
+          "exit": "15:55",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 1048,
+          "balAfter": 1989131
+        },
+        {
+          "entry": "17:00",
+          "exit": "17:24",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 28328,
+          "balAfter": 2017459
+        },
+        {
+          "entry": "18:15",
+          "exit": "18:27",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 1905,
+          "balAfter": 2019364
+        },
+        {
+          "entry": "19:35",
+          "exit": "19:40",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 3919,
+          "balAfter": 2023283
+        },
+        {
+          "entry": "20:54",
+          "exit": "21:15",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 4170,
+          "balAfter": 2027453
+        },
+        {
+          "entry": "22:16",
+          "exit": "22:30",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -10561,
+          "balAfter": 2016892
+        }
+      ]
+    },
+    {
+      "date": "2026-11-06",
+      "net": -29410,
+      "wins": 2,
+      "losses": 8,
+      "panes": 2,
+      "cap": 12101,
+      "balOpen": 2016892,
+      "balClose": 1987482,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:00",
+          "exit": "09:12",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -4297,
+          "balAfter": 2012595
+        },
+        {
+          "entry": "10:29",
+          "exit": "10:52",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -6516,
+          "balAfter": 2006079
+        },
+        {
+          "entry": "12:04",
+          "exit": "12:16",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -6897,
+          "balAfter": 1999182
+        },
+        {
+          "entry": "13:24",
+          "exit": "13:40",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -11195,
+          "balAfter": 1987987
+        },
+        {
+          "entry": "14:59",
+          "exit": "15:17",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -9293,
+          "balAfter": 1978694
+        },
+        {
+          "entry": "16:21",
+          "exit": "16:51",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -7559,
+          "balAfter": 1971135
+        },
+        {
+          "entry": "17:48",
+          "exit": "18:11",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -5329,
+          "balAfter": 1965806
+        },
+        {
+          "entry": "19:16",
+          "exit": "19:43",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -6160,
+          "balAfter": 1959646
+        },
+        {
+          "entry": "20:48",
+          "exit": "20:59",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 5183,
+          "balAfter": 1964829
+        },
+        {
+          "entry": "22:13",
+          "exit": "22:28",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 22653,
+          "balAfter": 1987482
+        }
+      ]
+    },
+    {
+      "date": "2026-11-09",
+      "net": 115630,
+      "wins": 7,
+      "losses": 4,
+      "panes": 3,
+      "cap": 11924,
+      "balOpen": 1987482,
+      "balClose": 2103112,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:06",
+          "exit": "09:17",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -6549,
+          "balAfter": 1980933
+        },
+        {
+          "entry": "10:20",
+          "exit": "10:31",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": -9244,
+          "balAfter": 1971689
+        },
+        {
+          "entry": "11:42",
+          "exit": "11:52",
+          "side": "SELL",
+          "pane": 3,
+          "pnl": 14598,
+          "balAfter": 1986287
+        },
+        {
+          "entry": "12:59",
+          "exit": "13:13",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 30988,
+          "balAfter": 2017275
+        },
+        {
+          "entry": "14:21",
+          "exit": "14:46",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 6675,
+          "balAfter": 2023950
+        },
+        {
+          "entry": "15:37",
+          "exit": "15:56",
+          "side": "BUY",
+          "pane": 3,
+          "pnl": 12868,
+          "balAfter": 2036818
+        },
+        {
+          "entry": "17:02",
+          "exit": "17:34",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 30890,
+          "balAfter": 2067708
+        },
+        {
+          "entry": "18:18",
+          "exit": "18:45",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 30995,
+          "balAfter": 2098703
+        },
+        {
+          "entry": "19:32",
+          "exit": "19:41",
+          "side": "BUY",
+          "pane": 3,
+          "pnl": -5303,
+          "balAfter": 2093400
+        },
+        {
+          "entry": "20:51",
+          "exit": "21:08",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -8185,
+          "balAfter": 2085215
+        },
+        {
+          "entry": "22:13",
+          "exit": "22:44",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 17897,
+          "balAfter": 2103112
+        }
+      ]
+    },
+    {
+      "date": "2026-11-10",
+      "net": 97340,
+      "wins": 10,
+      "losses": 2,
+      "panes": 2,
+      "cap": 12618,
+      "balOpen": 2103112,
+      "balClose": 2200452,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:02",
+          "exit": "09:12",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 24534,
+          "balAfter": 2127646
+        },
+        {
+          "entry": "10:16",
+          "exit": "10:44",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 11157,
+          "balAfter": 2138803
+        },
+        {
+          "entry": "11:25",
+          "exit": "11:39",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -7268,
+          "balAfter": 2131535
+        },
+        {
+          "entry": "12:35",
+          "exit": "12:42",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 6598,
+          "balAfter": 2138133
+        },
+        {
+          "entry": "13:53",
+          "exit": "14:18",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 22367,
+          "balAfter": 2160500
+        },
+        {
+          "entry": "15:06",
+          "exit": "15:16",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 2743,
+          "balAfter": 2163243
+        },
+        {
+          "entry": "16:14",
+          "exit": "16:36",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -12136,
+          "balAfter": 2151107
+        },
+        {
+          "entry": "17:29",
+          "exit": "17:36",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 11421,
+          "balAfter": 2162528
+        },
+        {
+          "entry": "18:35",
+          "exit": "18:42",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 2573,
+          "balAfter": 2165101
+        },
+        {
+          "entry": "19:51",
+          "exit": "20:00",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 19039,
+          "balAfter": 2184140
+        },
+        {
+          "entry": "21:05",
+          "exit": "21:19",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 12926,
+          "balAfter": 2197066
+        },
+        {
+          "entry": "22:11",
+          "exit": "22:22",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 3386,
+          "balAfter": 2200452
+        }
+      ]
+    },
+    {
+      "date": "2026-11-11",
+      "net": -42850,
+      "wins": 3,
+      "losses": 10,
+      "panes": 2,
+      "cap": 13202,
+      "balOpen": 2200452,
+      "balClose": 2157602,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:01",
+          "exit": "09:32",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 24057,
+          "balAfter": 2224509
+        },
+        {
+          "entry": "10:11",
+          "exit": "10:29",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": -7594,
+          "balAfter": 2216915
+        },
+        {
+          "entry": "11:16",
+          "exit": "11:30",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -6431,
+          "balAfter": 2210484
+        },
+        {
+          "entry": "12:25",
+          "exit": "12:52",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -9763,
+          "balAfter": 2200721
+        },
+        {
+          "entry": "13:25",
+          "exit": "13:53",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -12391,
+          "balAfter": 2188330
+        },
+        {
+          "entry": "14:31",
+          "exit": "14:41",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -12445,
+          "balAfter": 2175885
+        },
+        {
+          "entry": "15:40",
+          "exit": "15:50",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 17123,
+          "balAfter": 2193008
+        },
+        {
+          "entry": "16:48",
+          "exit": "17:18",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": -10279,
+          "balAfter": 2182729
+        },
+        {
+          "entry": "17:53",
+          "exit": "18:19",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -7184,
+          "balAfter": 2175545
+        },
+        {
+          "entry": "18:52",
+          "exit": "19:01",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -5829,
+          "balAfter": 2169716
+        },
+        {
+          "entry": "20:05",
+          "exit": "20:22",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -5322,
+          "balAfter": 2164394
+        },
+        {
+          "entry": "21:05",
+          "exit": "21:18",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 5336,
+          "balAfter": 2169730
+        },
+        {
+          "entry": "22:16",
+          "exit": "22:33",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -12128,
+          "balAfter": 2157602
+        }
+      ]
+    },
+    {
+      "date": "2026-11-12",
+      "net": 138920,
+      "wins": 9,
+      "losses": 2,
+      "panes": 2,
+      "cap": 12945,
+      "balOpen": 2157602,
+      "balClose": 2296522,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:08",
+          "exit": "09:13",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 29232,
+          "balAfter": 2186834
+        },
+        {
+          "entry": "10:24",
+          "exit": "10:56",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 10947,
+          "balAfter": 2197781
+        },
+        {
+          "entry": "11:44",
+          "exit": "12:01",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 12227,
+          "balAfter": 2210008
+        },
+        {
+          "entry": "12:57",
+          "exit": "13:03",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 8291,
+          "balAfter": 2218299
+        },
+        {
+          "entry": "14:20",
+          "exit": "14:30",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -10796,
+          "balAfter": 2207503
+        },
+        {
+          "entry": "15:36",
+          "exit": "15:47",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 16656,
+          "balAfter": 2224159
+        },
+        {
+          "entry": "16:59",
+          "exit": "17:23",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 23907,
+          "balAfter": 2248066
+        },
+        {
+          "entry": "18:17",
+          "exit": "18:29",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 17071,
+          "balAfter": 2265137
+        },
+        {
+          "entry": "19:35",
+          "exit": "20:02",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -7896,
+          "balAfter": 2257241
+        },
+        {
+          "entry": "20:51",
+          "exit": "20:59",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 31782,
+          "balAfter": 2289023
+        },
+        {
+          "entry": "22:17",
+          "exit": "22:36",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 7499,
+          "balAfter": 2296522
+        }
+      ]
+    },
+    {
+      "date": "2026-11-13",
+      "net": 76610,
+      "wins": 7,
+      "losses": 4,
+      "panes": 2,
+      "cap": 13779,
+      "balOpen": 2296522,
+      "balClose": 2373132,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:00",
+          "exit": "09:20",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -12324,
+          "balAfter": 2284198
+        },
+        {
+          "entry": "10:24",
+          "exit": "10:50",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -4979,
+          "balAfter": 2279219
+        },
+        {
+          "entry": "11:40",
+          "exit": "12:10",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 29001,
+          "balAfter": 2308220
+        },
+        {
+          "entry": "12:58",
+          "exit": "13:14",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 22998,
+          "balAfter": 2331218
+        },
+        {
+          "entry": "14:22",
+          "exit": "14:35",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -6962,
+          "balAfter": 2324256
+        },
+        {
+          "entry": "15:40",
+          "exit": "16:01",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 6928,
+          "balAfter": 2331184
+        },
+        {
+          "entry": "17:02",
+          "exit": "17:21",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 9383,
+          "balAfter": 2340567
+        },
+        {
+          "entry": "18:18",
+          "exit": "18:40",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 5005,
+          "balAfter": 2345572
+        },
+        {
+          "entry": "19:33",
+          "exit": "19:47",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 3873,
+          "balAfter": 2349445
+        },
+        {
+          "entry": "20:51",
+          "exit": "20:56",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 34474,
+          "balAfter": 2383919
+        },
+        {
+          "entry": "22:12",
+          "exit": "22:38",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -10787,
+          "balAfter": 2373132
+        }
+      ]
+    },
+    {
+      "date": "2026-11-16",
+      "net": -35240,
+      "wins": 2,
+      "losses": 9,
+      "panes": 2,
+      "cap": 14238,
+      "balOpen": 2373132,
+      "balClose": 2337892,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:06",
+          "exit": "09:23",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 20570,
+          "balAfter": 2393702
+        },
+        {
+          "entry": "10:20",
+          "exit": "10:50",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 34967,
+          "balAfter": 2428669
+        },
+        {
+          "entry": "11:41",
+          "exit": "11:51",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -5090,
+          "balAfter": 2423579
+        },
+        {
+          "entry": "12:57",
+          "exit": "13:02",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": -10253,
+          "balAfter": 2413326
+        },
+        {
+          "entry": "14:22",
+          "exit": "14:42",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -13272,
+          "balAfter": 2400054
+        },
+        {
+          "entry": "15:38",
+          "exit": "16:06",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": -11610,
+          "balAfter": 2388444
+        },
+        {
+          "entry": "16:57",
+          "exit": "17:25",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -13244,
+          "balAfter": 2375200
+        },
+        {
+          "entry": "18:19",
+          "exit": "18:27",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": -5198,
+          "balAfter": 2370002
+        },
+        {
+          "entry": "19:33",
+          "exit": "19:44",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -13525,
+          "balAfter": 2356477
+        },
+        {
+          "entry": "20:54",
+          "exit": "21:14",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": -10509,
+          "balAfter": 2345968
+        },
+        {
+          "entry": "22:16",
+          "exit": "22:47",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -8076,
+          "balAfter": 2337892
+        }
+      ]
+    },
+    {
+      "date": "2026-11-17",
+      "net": -48670,
+      "wins": 2,
+      "losses": 9,
+      "panes": 2,
+      "cap": 14027,
+      "balOpen": 2337892,
+      "balClose": 2289222,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:08",
+          "exit": "09:31",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -10556,
+          "balAfter": 2327336
+        },
+        {
+          "entry": "10:22",
+          "exit": "10:53",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": -8747,
+          "balAfter": 2318589
+        },
+        {
+          "entry": "11:41",
+          "exit": "12:03",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 1408,
+          "balAfter": 2319997
+        },
+        {
+          "entry": "12:59",
+          "exit": "13:06",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": -9836,
+          "balAfter": 2310161
+        },
+        {
+          "entry": "14:17",
+          "exit": "14:25",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -8223,
+          "balAfter": 2301938
+        },
+        {
+          "entry": "15:43",
+          "exit": "15:53",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": -10535,
+          "balAfter": 2291403
+        },
+        {
+          "entry": "16:58",
+          "exit": "17:25",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -12528,
+          "balAfter": 2278875
+        },
+        {
+          "entry": "18:17",
+          "exit": "18:32",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 33138,
+          "balAfter": 2312013
+        },
+        {
+          "entry": "19:33",
+          "exit": "19:56",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -8456,
+          "balAfter": 2303557
+        },
+        {
+          "entry": "20:56",
+          "exit": "21:21",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -5904,
+          "balAfter": 2297653
+        },
+        {
+          "entry": "22:12",
+          "exit": "22:25",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -8431,
+          "balAfter": 2289222
+        }
+      ]
+    },
+    {
+      "date": "2026-11-18",
+      "net": 127580,
+      "wins": 8,
+      "losses": 3,
+      "panes": 2,
+      "cap": 13735,
+      "balOpen": 2289222,
+      "balClose": 2416802,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:06",
+          "exit": "09:15",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 9759,
+          "balAfter": 2298981
+        },
+        {
+          "entry": "10:22",
+          "exit": "10:30",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 4260,
+          "balAfter": 2303241
+        },
+        {
+          "entry": "11:44",
+          "exit": "11:55",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -5103,
+          "balAfter": 2298138
+        },
+        {
+          "entry": "13:04",
+          "exit": "13:14",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 28455,
+          "balAfter": 2326593
+        },
+        {
+          "entry": "14:18",
+          "exit": "14:49",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 21415,
+          "balAfter": 2348008
+        },
+        {
+          "entry": "15:41",
+          "exit": "16:10",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 25688,
+          "balAfter": 2373696
+        },
+        {
+          "entry": "16:54",
+          "exit": "17:01",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -5551,
+          "balAfter": 2368145
+        },
+        {
+          "entry": "18:18",
+          "exit": "18:42",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 6112,
+          "balAfter": 2374257
+        },
+        {
+          "entry": "19:34",
+          "exit": "19:51",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 15452,
+          "balAfter": 2389709
+        },
+        {
+          "entry": "20:56",
+          "exit": "21:26",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": -6026,
+          "balAfter": 2383683
+        },
+        {
+          "entry": "22:13",
+          "exit": "22:43",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 33119,
+          "balAfter": 2416802
+        }
+      ]
+    },
+    {
+      "date": "2026-11-19",
+      "net": 168430,
+      "wins": 9,
+      "losses": 4,
+      "panes": 2,
+      "cap": 14500,
+      "balOpen": 2416802,
+      "balClose": 2585232,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:03",
+          "exit": "09:23",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 3996,
+          "balAfter": 2420798
+        },
+        {
+          "entry": "10:08",
+          "exit": "10:23",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 18710,
+          "balAfter": 2439508
+        },
+        {
+          "entry": "11:12",
+          "exit": "11:39",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -12343,
+          "balAfter": 2427165
+        },
+        {
+          "entry": "12:20",
+          "exit": "12:42",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 4314,
+          "balAfter": 2431479
+        },
+        {
+          "entry": "13:26",
+          "exit": "13:37",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -14343,
+          "balAfter": 2417136
+        },
+        {
+          "entry": "14:30",
+          "exit": "14:48",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -9235,
+          "balAfter": 2407901
+        },
+        {
+          "entry": "15:38",
+          "exit": "15:59",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 21850,
+          "balAfter": 2429751
+        },
+        {
+          "entry": "16:41",
+          "exit": "17:09",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 29739,
+          "balAfter": 2459490
+        },
+        {
+          "entry": "17:52",
+          "exit": "17:57",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 37305,
+          "balAfter": 2496795
+        },
+        {
+          "entry": "18:53",
+          "exit": "19:12",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 31766,
+          "balAfter": 2528561
+        },
+        {
+          "entry": "20:04",
+          "exit": "20:29",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 37662,
+          "balAfter": 2566223
+        },
+        {
+          "entry": "21:04",
+          "exit": "21:24",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -5413,
+          "balAfter": 2560810
+        },
+        {
+          "entry": "22:11",
+          "exit": "22:34",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 24422,
+          "balAfter": 2585232
+        }
+      ]
+    },
+    {
+      "date": "2026-11-20",
+      "net": 92460,
+      "wins": 11,
+      "losses": 2,
+      "panes": 2,
+      "cap": 15511,
+      "balOpen": 2585232,
+      "balClose": 2677692,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:05",
+          "exit": "09:22",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 702,
+          "balAfter": 2585934
+        },
+        {
+          "entry": "10:11",
+          "exit": "10:16",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 739,
+          "balAfter": 2586673
+        },
+        {
+          "entry": "11:17",
+          "exit": "11:29",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 28512,
+          "balAfter": 2615185
+        },
+        {
+          "entry": "12:25",
+          "exit": "12:31",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 716,
+          "balAfter": 2615901
+        },
+        {
+          "entry": "13:28",
+          "exit": "13:34",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -8916,
+          "balAfter": 2606985
+        },
+        {
+          "entry": "14:36",
+          "exit": "14:55",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 9813,
+          "balAfter": 2616798
+        },
+        {
+          "entry": "15:41",
+          "exit": "15:54",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -10239,
+          "balAfter": 2606559
+        },
+        {
+          "entry": "16:46",
+          "exit": "16:51",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 28061,
+          "balAfter": 2634620
+        },
+        {
+          "entry": "17:47",
+          "exit": "18:08",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 5088,
+          "balAfter": 2639708
+        },
+        {
+          "entry": "18:53",
+          "exit": "19:04",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 713,
+          "balAfter": 2640421
+        },
+        {
+          "entry": "19:59",
+          "exit": "20:08",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 729,
+          "balAfter": 2641150
+        },
+        {
+          "entry": "21:08",
+          "exit": "21:36",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 7655,
+          "balAfter": 2648805
+        },
+        {
+          "entry": "22:16",
+          "exit": "22:25",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 28887,
+          "balAfter": 2677692
+        }
+      ]
+    },
+    {
+      "date": "2026-11-23",
+      "net": 117860,
+      "wins": 9,
+      "losses": 4,
+      "panes": 1,
+      "cap": 16066,
+      "balOpen": 2677692,
+      "balClose": 2795552,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:07",
+          "exit": "09:38",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 20386,
+          "balAfter": 2698078
+        },
+        {
+          "entry": "10:09",
+          "exit": "10:40",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -14459,
+          "balAfter": 2683619
+        },
+        {
+          "entry": "11:13",
+          "exit": "11:41",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 28520,
+          "balAfter": 2712139
+        },
+        {
+          "entry": "12:24",
+          "exit": "12:41",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -8463,
+          "balAfter": 2703676
+        },
+        {
+          "entry": "13:29",
+          "exit": "13:46",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 12882,
+          "balAfter": 2716558
+        },
+        {
+          "entry": "14:37",
+          "exit": "14:58",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 33795,
+          "balAfter": 2750353
+        },
+        {
+          "entry": "15:39",
+          "exit": "15:53",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 2627,
+          "balAfter": 2752980
+        },
+        {
+          "entry": "16:41",
+          "exit": "16:56",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 7313,
+          "balAfter": 2760293
+        },
+        {
+          "entry": "17:54",
+          "exit": "18:20",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 5539,
+          "balAfter": 2765832
+        },
+        {
+          "entry": "18:56",
+          "exit": "19:01",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 25434,
+          "balAfter": 2791266
+        },
+        {
+          "entry": "20:05",
+          "exit": "20:30",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -14805,
+          "balAfter": 2776461
+        },
+        {
+          "entry": "21:06",
+          "exit": "21:17",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 26169,
+          "balAfter": 2802630
+        },
+        {
+          "entry": "22:17",
+          "exit": "22:39",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -7078,
+          "balAfter": 2795552
+        }
+      ]
+    },
+    {
+      "date": "2026-11-24",
+      "net": -56320,
+      "wins": 4,
+      "losses": 7,
+      "panes": 2,
+      "cap": 16773,
+      "balOpen": 2795552,
+      "balClose": 2739232,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:01",
+          "exit": "09:08",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -5926,
+          "balAfter": 2789626
+        },
+        {
+          "entry": "10:21",
+          "exit": "10:40",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -8127,
+          "balAfter": 2781499
+        },
+        {
+          "entry": "11:41",
+          "exit": "12:11",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -15799,
+          "balAfter": 2765700
+        },
+        {
+          "entry": "13:01",
+          "exit": "13:14",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 917,
+          "balAfter": 2766617
+        },
+        {
+          "entry": "14:18",
+          "exit": "14:39",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 835,
+          "balAfter": 2767452
+        },
+        {
+          "entry": "15:35",
+          "exit": "15:49",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": -6599,
+          "balAfter": 2760853
+        },
+        {
+          "entry": "16:56",
+          "exit": "17:01",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -8535,
+          "balAfter": 2752318
+        },
+        {
+          "entry": "18:21",
+          "exit": "18:50",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -13891,
+          "balAfter": 2738427
+        },
+        {
+          "entry": "19:38",
+          "exit": "19:58",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -13491,
+          "balAfter": 2724936
+        },
+        {
+          "entry": "20:59",
+          "exit": "21:24",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 13148,
+          "balAfter": 2738084
+        },
+        {
+          "entry": "22:13",
+          "exit": "22:28",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 1148,
+          "balAfter": 2739232
+        }
+      ]
+    },
+    {
+      "date": "2026-11-25",
+      "net": 145970,
+      "wins": 7,
+      "losses": 3,
+      "panes": 2,
+      "cap": 16435,
+      "balOpen": 2739232,
+      "balClose": 2885202,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:01",
+          "exit": "09:13",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 39539,
+          "balAfter": 2778771
+        },
+        {
+          "entry": "10:34",
+          "exit": "11:00",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 34853,
+          "balAfter": 2813624
+        },
+        {
+          "entry": "11:59",
+          "exit": "12:15",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 12598,
+          "balAfter": 2826222
+        },
+        {
+          "entry": "13:27",
+          "exit": "13:56",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -14939,
+          "balAfter": 2811283
+        },
+        {
+          "entry": "14:51",
+          "exit": "15:21",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 26698,
+          "balAfter": 2837981
+        },
+        {
+          "entry": "16:26",
+          "exit": "16:43",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -9765,
+          "balAfter": 2828216
+        },
+        {
+          "entry": "17:48",
+          "exit": "18:15",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 30202,
+          "balAfter": 2858418
+        },
+        {
+          "entry": "19:16",
+          "exit": "19:28",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 3123,
+          "balAfter": 2861541
+        },
+        {
+          "entry": "20:49",
+          "exit": "21:00",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -13168,
+          "balAfter": 2848373
+        },
+        {
+          "entry": "22:10",
+          "exit": "22:34",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 36829,
+          "balAfter": 2885202
+        }
+      ]
+    },
+    {
+      "date": "2026-11-26",
+      "net": -37980,
+      "wins": 3,
+      "losses": 10,
+      "panes": 1,
+      "cap": 17311,
+      "balOpen": 2885202,
+      "balClose": 2847222,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:03",
+          "exit": "09:30",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -10831,
+          "balAfter": 2874371
+        },
+        {
+          "entry": "10:11",
+          "exit": "10:35",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 28936,
+          "balAfter": 2903307
+        },
+        {
+          "entry": "11:16",
+          "exit": "11:37",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 20006,
+          "balAfter": 2923313
+        },
+        {
+          "entry": "12:22",
+          "exit": "12:28",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -16280,
+          "balAfter": 2907033
+        },
+        {
+          "entry": "13:27",
+          "exit": "13:32",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -16533,
+          "balAfter": 2890500
+        },
+        {
+          "entry": "14:36",
+          "exit": "14:51",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -16322,
+          "balAfter": 2874178
+        },
+        {
+          "entry": "15:37",
+          "exit": "15:46",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -16416,
+          "balAfter": 2857762
+        },
+        {
+          "entry": "16:46",
+          "exit": "17:16",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -7385,
+          "balAfter": 2850377
+        },
+        {
+          "entry": "17:52",
+          "exit": "18:09",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -9743,
+          "balAfter": 2840634
+        },
+        {
+          "entry": "18:58",
+          "exit": "19:05",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 41597,
+          "balAfter": 2882231
+        },
+        {
+          "entry": "20:06",
+          "exit": "20:11",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -11378,
+          "balAfter": 2870853
+        },
+        {
+          "entry": "21:06",
+          "exit": "21:30",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -6577,
+          "balAfter": 2864276
+        },
+        {
+          "entry": "22:18",
+          "exit": "22:29",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -17054,
+          "balAfter": 2847222
+        }
+      ]
+    },
+    {
+      "date": "2026-11-27",
+      "net": 133740,
+      "wins": 8,
+      "losses": 2,
+      "panes": 2,
+      "cap": 17083,
+      "balOpen": 2847222,
+      "balClose": 2980962,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:00",
+          "exit": "09:06",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 19299,
+          "balAfter": 2866521
+        },
+        {
+          "entry": "10:36",
+          "exit": "10:59",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 26493,
+          "balAfter": 2893014
+        },
+        {
+          "entry": "12:03",
+          "exit": "12:30",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": -10932,
+          "balAfter": 2882082
+        },
+        {
+          "entry": "13:31",
+          "exit": "13:37",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": -10265,
+          "balAfter": 2871817
+        },
+        {
+          "entry": "14:54",
+          "exit": "15:24",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 18266,
+          "balAfter": 2890083
+        },
+        {
+          "entry": "16:25",
+          "exit": "16:38",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 16247,
+          "balAfter": 2906330
+        },
+        {
+          "entry": "17:51",
+          "exit": "18:18",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 10343,
+          "balAfter": 2916673
+        },
+        {
+          "entry": "19:22",
+          "exit": "19:31",
+          "side": "SELL",
+          "pane": 2,
+          "pnl": 36159,
+          "balAfter": 2952832
+        },
+        {
+          "entry": "20:45",
+          "exit": "20:59",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 16490,
+          "balAfter": 2969322
+        },
+        {
+          "entry": "22:14",
+          "exit": "22:22",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 11640,
+          "balAfter": 2980962
+        }
+      ]
+    },
+    {
+      "date": "2026-11-30",
+      "net": 53233,
+      "wins": 9,
+      "losses": 2,
+      "panes": 3,
+      "cap": 17885,
+      "balOpen": 2980962,
+      "balClose": 3034195,
+      "existing": false,
+      "trades": [
+        {
+          "entry": "09:05",
+          "exit": "09:16",
+          "side": "BUY",
+          "pane": 1,
+          "pnl": 1508,
+          "balAfter": 2982470
+        },
+        {
+          "entry": "10:20",
+          "exit": "10:52",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 3660,
+          "balAfter": 2986130
+        },
+        {
+          "entry": "11:41",
+          "exit": "11:57",
+          "side": "BUY",
+          "pane": 3,
+          "pnl": 6251,
+          "balAfter": 2992381
+        },
+        {
+          "entry": "13:01",
+          "exit": "13:33",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 23586,
+          "balAfter": 3015967
+        },
+        {
+          "entry": "14:20",
+          "exit": "14:43",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": -11703,
+          "balAfter": 3004264
+        },
+        {
+          "entry": "15:36",
+          "exit": "16:00",
+          "side": "SELL",
+          "pane": 3,
+          "pnl": 6187,
+          "balAfter": 3010451
+        },
+        {
+          "entry": "17:01",
+          "exit": "17:23",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": -7193,
+          "balAfter": 3003258
+        },
+        {
+          "entry": "18:15",
+          "exit": "18:29",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 20324,
+          "balAfter": 3023582
+        },
+        {
+          "entry": "19:37",
+          "exit": "19:43",
+          "side": "SELL",
+          "pane": 3,
+          "pnl": 5812,
+          "balAfter": 3029394
+        },
+        {
+          "entry": "20:59",
+          "exit": "21:10",
+          "side": "SELL",
+          "pane": 1,
+          "pnl": 4077,
+          "balAfter": 3033471
+        },
+        {
+          "entry": "22:12",
+          "exit": "22:33",
+          "side": "BUY",
+          "pane": 2,
+          "pnl": 724,
+          "balAfter": 3034195
+        }
+      ]
+    }
+  ],
+  "mainOpeningBalance": 399615804,
+  "mainClosingBalance": 530677392
+}
