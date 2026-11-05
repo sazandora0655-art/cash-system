@@ -249,9 +249,12 @@ select,input[type=date]{font:inherit;font-size:14px;color:var(--txt);background:
 
 .gpill[hidden],.card[hidden],.sec[hidden]{display:none!important}
 .cal-scroll{overflow-x:auto;overscroll-behavior-x:contain}
+.stack{min-width:0;grid-template-columns:minmax(0,1fr)}
+.profit-only .ch{flex-wrap:wrap}
 .cal.full-yen .cell .v{font-size:11px;white-space:nowrap;word-break:normal;font-variant-numeric:tabular-nums}
 .profit-only .summary .bal{color:var(--pos)}
 .profit-only .summary .net{font-size:12px;color:var(--dim);font-weight:500}
+.profit-only .summary .row2{display:none}
 /* LP recording view: the same history UI in a narrow portrait column, including its sample label. */
 body.portrait{max-width:480px;margin:0 auto}
 body.portrait .wrap{padding:12px 12px 48px}
@@ -556,7 +559,7 @@ function renderHead(){
   const profit=!!ACCT.profitOnly;
   document.querySelector('header h1').textContent='取引履歴';
   document.body.classList.toggle('profit-only',profit);
-  $('balanceLabel').textContent=profit?'累計利益（シミュレーション）':'残高';
+  $('balanceLabel').textContent=profit?'累計利益':'残高';
   $('equityTitle').textContent=profit?'累計利益の推移':'資産推移';
   $('equityLegend').textContent=profit?'累計利益':'残高';
   $('depositLegend').hidden=profit;
@@ -572,19 +575,18 @@ function renderHead(){
   p.className='gpill num '+(g>=0?'up':'dn');
   if(profit){
     $('bal').innerHTML='<span class="cur">+</span>'+nf.format(STAT.net)+'<span class="cur"> 円</span>';
-    $('net').textContent='運用期間 '+ACCT.period;
+    $('net').textContent='';
     $('net').className='net';
     if(ACCT.id==='sample-l'||ACCT.id==='sample-41'){
       const ms=months();
       const value=ACCT.id==='sample-l'?(ms.length?Math.round(STAT.net/ms.length):0):(ms.length?ms[ms.length-1].pnl:0);
-      $('balanceLabel').textContent=(ACCT.id==='sample-l'?'月平均利益':'最新月の利益')+'（シミュレーション）';
+      $('balanceLabel').textContent=(ACCT.id==='sample-l'?'月平均利益':'最新月の利益');
       $('bal').innerHTML='<span class="cur">'+(value>=0?'+':'−')+'</span>'+nf.format(Math.abs(value))+'<span class="cur"> 円</span>';
-      $('net').textContent+=' ／ 累計 '+yen(STAT.net,true)+'円';
     }
   }
   const bd=$('acctBadge'), cp=$('acctCap');           // バックテストの口座だけ、見出しと残高の上に目印を出す
   if(bd){ bd.hidden=!ACCT.badge; bd.textContent=ACCT.badge||''; }
-  if(cp){ cp.hidden=!ACCT.caption; cp.textContent=ACCT.caption||''; }
+  if(cp){ cp.hidden=!!ACCT.sample||!ACCT.caption; cp.textContent=ACCT.sample?'':ACCT.caption||''; }
   const k=[
     ['取引回数', nf.format(STAT.n)+'<small>回</small>', 0, '', ''],
     ['勝率', pct(STAT.wr), STAT.wr, '', 'g'],
