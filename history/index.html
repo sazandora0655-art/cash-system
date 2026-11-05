@@ -577,12 +577,6 @@ function renderHead(){
     $('bal').innerHTML='<span class="cur">+</span>'+nf.format(STAT.net)+'<span class="cur"> 円</span>';
     $('net').textContent='';
     $('net').className='net';
-    if(ACCT.id==='sample-l'||ACCT.id==='sample-41'){
-      const ms=months();
-      const value=ACCT.id==='sample-l'?(ms.length?Math.round(STAT.net/ms.length):0):(ms.length?ms[ms.length-1].pnl:0);
-      $('balanceLabel').textContent=(ACCT.id==='sample-l'?'月平均利益':'最新月の利益');
-      $('bal').innerHTML='<span class="cur">'+(value>=0?'+':'−')+'</span>'+nf.format(Math.abs(value))+'<span class="cur"> 円</span>';
-    }
   }
   const bd=$('acctBadge'), cp=$('acctCap');           // バックテストの口座だけ、見出しと残高の上に目印を出す
   if(bd){ bd.hidden=!ACCT.badge; bd.textContent=ACCT.badge||''; }
