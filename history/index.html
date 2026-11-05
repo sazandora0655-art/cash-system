@@ -246,6 +246,25 @@ select,input[type=date]{font:inherit;font-size:14px;color:var(--txt);background:
 .acap{margin:12px 14px 0;padding:8px 11px;border:1px solid var(--accline);background:var(--accbg);border-radius:7px;
   font-size:11.5px;line-height:1.7;color:var(--txt)}
 .badge[hidden],.acap[hidden],.legend [hidden]{display:none}
+
+.gpill[hidden],.card[hidden],.sec[hidden]{display:none!important}
+.cal-scroll{overflow-x:auto;overscroll-behavior-x:contain}
+.cal.full-yen .cell .v{font-size:11px;white-space:nowrap;word-break:normal;font-variant-numeric:tabular-nums}
+.profit-only .summary .bal{color:var(--pos)}
+.profit-only .summary .net{font-size:12px;color:var(--dim);font-weight:500}
+/* LP recording view: the same history UI in a narrow portrait column, including its sample label. */
+body.portrait{max-width:480px;margin:0 auto}
+body.portrait .wrap{padding:12px 12px 48px}
+body.portrait .cols{display:block}
+body.portrait .stack{min-width:0;grid-template-columns:minmax(0,1fr)}
+body.portrait .card{min-width:0;max-width:100%}
+body.portrait .cwrap{min-width:0;overflow:hidden}
+body.portrait .kpis{grid-template-columns:repeat(3,1fr)}
+body.portrait #histCard{position:static;max-height:none;margin-top:12px}
+body.portrait .ch{position:static;flex-wrap:wrap}
+body.portrait .summary .bal{font-size:38px}
+body.portrait .tabs{display:none}
+body.portrait header{top:0}
 </style>
 </head>
 <body>
@@ -267,7 +286,7 @@ select,input[type=date]{font:inherit;font-size:14px;color:var(--txt);background:
   <div class="card" style="margin-bottom:12px">
     <div class="acap" id="acctCap" hidden></div>
     <div class="summary">
-      <div class="lb">残高</div>
+      <div class="lb" id="balanceLabel">残高</div>
       <div class="bal num" id="bal"><span class="cur">¥</span>—</div>
       <div class="row2">
         <span class="net num" id="net">—</span>
@@ -286,12 +305,12 @@ select,input[type=date]{font:inherit;font-size:14px;color:var(--txt);background:
     <div class="stack" id="paneChart">
 
       <div class="card">
-        <div class="ch"><h3>資産推移</h3><div class="seg" id="segRange"></div></div>
+        <div class="ch"><h3 id="equityTitle">資産推移</h3><div class="seg" id="segRange"></div></div>
         <div class="cwrap"><canvas id="eq" height="250"></canvas><div class="tip" id="eqTip"></div></div>
         <div class="legend">
-          <span><i style="background:var(--eq)"></i>残高</span>
+          <span><i style="background:var(--eq)"></i><span id="equityLegend">残高</span></span>
           <span id="eqLowLeg" hidden><i style="background:var(--sell)"></i>含み損を入れた金額（最低）</span>
-          <span><i style="background:var(--line2)"></i>元本</span>
+          <span id="depositLegend"><i style="background:var(--line2)"></i>元本</span>
           <span id="eqNote"></span>
         </div>
       </div>
@@ -315,8 +334,8 @@ select,input[type=date]{font:inherit;font-size:14px;color:var(--txt);background:
           </div>
         </div>
         <div class="cb">
-          <div class="calhead" id="calHead"></div>
-          <div class="cal" id="cal"></div>
+          <div class="cal-scroll"><div class="calhead" id="calHead"></div>
+          <div class="cal" id="cal"></div></div>
           <div class="calfoot"><span id="calUnitLab"></span><span id="calSum">—</span></div>
           <div class="calhint">日付を押すと、その月の取引履歴が開きます</div>
         </div>
@@ -387,6 +406,7 @@ select,input[type=date]{font:inherit;font-size:14px;color:var(--txt);background:
 </div>
 
 <script src="history.js"></script>
+<script src="samples.js"></script>
 <script src="apexgrid.js"></script><!-- 3つ目の口座＝ApexGrid（バックテスト）。build_apexgrid.py が作る。無くても他の口座は動く -->
 <script>
 'use strict';
@@ -394,6 +414,7 @@ select,input[type=date]{font:inherit;font-size:14px;color:var(--txt);background:
 /* ═════════ 0. 設定 ═════════ */
 const LS='cash_hist_cfg', LSDATA='cash_hist_data';
 const Q=new URLSearchParams(location.search);
+if(Q.get('layout')==='portrait') document.body.classList.add('portrait');
 const CFG={acct:'main', range:'all', dist:'dow', res:'all', side:'all', ch:'all', hrange:'all',
            money:'yen', cols:'full', asof:'today', tab:'chart', theme:'auto'};
 try{Object.assign(CFG,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
@@ -421,6 +442,13 @@ try{ const s=localStorage.getItem(LSDATA); if(s){ const d=JSON.parse(s); if(d&&d
 
 function baseDate(b){ const m=/(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)/.exec(b||'');
   return m? new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5]) : new Date(2024,8,2); }
+// Merge independent sample accounts without changing existing/imported account data.
+const sampleSource=window.CASH_SAMPLES;
+if(sampleSource&&sampleSource.accounts){
+  const shift=Math.round((baseDate(sampleSource.base)-baseDate(SRC.base))/60000);
+  const ids=new Set(SRC.accounts.map(a=>a.id));
+  SRC={...SRC,accounts:[...SRC.accounts,...sampleSource.accounts.filter(a=>!ids.has(a.id)).map(a=>({...a,rows:a.rows.map(r=>[r[0]+shift,r[1]+shift,...r.slice(2)])}))]};
+}
 let BASE=baseDate(SRC.base);
 const MIN=60000;
 const toDate=m=>new Date(BASE.getTime()+m*MIN);
@@ -439,6 +467,7 @@ function pickAccount(){
   ACCT = SRC.accounts.find(a=>a.id===CFG.acct) || SRC.accounts[0];
   if(!ACCT) return;
   CFG.acct=ACCT.id;
+  if(ACCT.profitOnly) CFG.money='yen';
   EQ = Array.isArray(ACCT.eq)&&ACCT.eq.length? ACCT.eq.slice().sort((a,b)=>a[0]-b[0]) : null;
   ALL = (ACCT.rows||[]).map(r=>{
     const dIn=toDate(r[0]), dOut=toDate(r[1]);
@@ -510,7 +539,7 @@ function yen(n,sign){ if(n==null) return '—';
   const s=nf.format(Math.abs(Math.round(n)));
   return (sign? (n>=0?'+':'−') : (n<0?'−':'')) + s; }
 function money(n,sign){
-  if(CFG.money==='pct'){ const d=STAT.dep||1; return (sign?(n>=0?'+':'−'):'')+(Math.abs(n)/d*100).toFixed(2)+'%'; }
+  if(CFG.money==='pct'&&!ACCT.profitOnly){ const d=STAT.dep||1; return (sign?(n>=0?'+':'−'):'')+(Math.abs(n)/d*100).toFixed(2)+'%'; }
   return yen(n,sign);
 }
 function pct(x,d){ return (x*100).toFixed(d==null?1:d)+'%'; }
@@ -524,12 +553,35 @@ const cls=n=>n>0?'pos':n<0?'neg':'flat';
 
 /* ═════════ 4. サマリー ═════════ */
 function renderHead(){
+  const profit=!!ACCT.profitOnly;
+  document.querySelector('header h1').textContent=profit?ACCT.label.replace('（シミュレーション）',''):'取引履歴';
+  document.body.classList.toggle('profit-only',profit);
+  $('balanceLabel').textContent=profit?'累計利益（シミュレーション）':'残高';
+  $('equityTitle').textContent=profit?'累計利益の推移':'資産推移';
+  $('equityLegend').textContent=profit?'累計利益':'残高';
+  $('depositLegend').hidden=profit;
+  $('netPct').hidden=profit;
+  $('segMoney').closest('.sec').hidden=profit;
+  $('dd').closest('.card').hidden=profit;
+
   $('bal').innerHTML = '<span class="cur">¥</span>'+nf.format(STAT.bal);
   const n=$('net'); n.textContent=money(STAT.net,true)+(CFG.money==='pct'?'':'円'); n.className='net num '+cls(STAT.net);
   const p=$('netPct');
   const g=STAT.dep? STAT.net/STAT.dep : 0;
   p.textContent=(g>=0?'+':'−')+pct(Math.abs(g));
   p.className='gpill num '+(g>=0?'up':'dn');
+  if(profit){
+    $('bal').innerHTML='<span class="cur">+</span>'+nf.format(STAT.net)+'<span class="cur"> 円</span>';
+    $('net').textContent=ACCT.profile+' ／ '+ACCT.period;
+    $('net').className='net';
+    if(ACCT.id==='sample-l'||ACCT.id==='sample-41'){
+      const ms=months();
+      const value=ACCT.id==='sample-l'?(ms.length?Math.round(STAT.net/ms.length):0):(ms.length?ms[ms.length-1].pnl:0);
+      $('balanceLabel').textContent=(ACCT.id==='sample-l'?'月平均利益':'最新月の利益')+'（シミュレーション）';
+      $('bal').innerHTML='<span class="cur">'+(value>=0?'+':'−')+'</span>'+nf.format(Math.abs(value))+'<span class="cur"> 円</span>';
+      $('net').textContent+=' ／ 累計 '+yen(STAT.net,true)+'円';
+    }
+  }
   const bd=$('acctBadge'), cp=$('acctCap');           // バックテストの口座だけ、見出しと残高の上に目印を出す
   if(bd){ bd.hidden=!ACCT.badge; bd.textContent=ACCT.badge||''; }
   if(cp){ cp.hidden=!ACCT.caption; cp.textContent=ACCT.caption||''; }
@@ -539,7 +591,7 @@ function renderHead(){
     ['PF（損益比）', STAT.pf.toFixed(2), Math.min(1,(STAT.pf-1)/1.2), '', ''],
     ['平均利益', money(STAT.avgW), 0, 'pos', ''],
     ['平均損失', money(-STAT.avgL), 0, 'neg', ''],
-    ['最大の落ち込み', '−'+pct(STAT.ddp,1), 0, 'neg', '', STAT.hasEq?'含み損込み':''],   // 「含み損込み」は見出しに付けると長すぎてスマホ幅の3列に入らないので、数字の下に添える
+    [profit?'利益の最大減少':'最大の落ち込み', profit?'−'+yen(STAT.dd):'−'+pct(STAT.ddp,1), 0, 'neg', '', STAT.hasEq?'含み損込み':''],
   ];
   $('kpis').innerHTML = k.map(([a,b,bar,c,bc,note])=>  // 10文字以上の値（−2,871,523 など）は少し小さく＝スマホ幅で3列からはみ出さない
     '<div class="kpi"><div class="k">'+a+'</div><div class="v num '+c+(b.replace(/<[^>]*>/g,'').length>=10?' long':'')+'">'+b+'</div>'+
@@ -563,7 +615,7 @@ function renderDetail(){
     ['1回に賭けている額', pct(STAT.riskAvg,2)+'<span class="note">平均損失 ÷ そのときの残高</span>'],
     ['リカバリーファクター', STAT.rf.toFixed(2)+'<span class="note">増えた額 ÷ 最大の落ち込み</span>'],
   ];
-  el.innerHTML = rows.map(([k,v])=>'<div class="k">'+k+'</div><div class="v num">'+v+'</div>').join('');
+  el.innerHTML = rows.filter(([k])=>!ACCT.profitOnly||!['1回に賭けている額','リカバリーファクター'].includes(k)).map(([k,v])=>'<div class="k">'+k+'</div><div class="v num">'+v+'</div>').join('');
 }
 
 /* ═════════ 5. Canvas 共通 ═════════ */
@@ -636,7 +688,7 @@ function drawEq(){
   grid(g,w,h,pad,4,axisFmt,min,max);
 
   const dep=STAT.dep;
-  if(dep>=min&&dep<=max){
+  if(!ACCT.profitOnly&&dep>=min&&dep<=max){
     g.strokeStyle=CSS('--line2'); g.setLineDash([4,4]); g.lineWidth=1; g.beginPath();
     g.moveTo(pad.l,Math.round(Y(dep))+.5); g.lineTo(w-pad.r,Math.round(Y(dep))+.5); g.stroke(); g.setLineDash([]);
   }
@@ -660,7 +712,9 @@ function drawEq(){
   xLabels(g,ds,X,w,h,pad);
   eqPts=ds.map((d,i)=>({x:X(i),y:Y(d.bal),d}));
   const gain=STAT.dep? (ds[ds.length-1].bal-open)/open : 0;
-  $('eqNote').innerHTML='この期間 <b class="'+cls(gain)+'">'+(gain>=0?'+':'−')+pct(Math.abs(gain))+'</b>';
+  $('eqNote').innerHTML=ACCT.profitOnly?
+    'この期間 <b class="'+cls(ds[ds.length-1].bal-open)+'">'+yen(ds[ds.length-1].bal-open,true)+'円</b>':
+    'この期間 <b class="'+cls(gain)+'">'+(gain>=0?'+':'−')+pct(Math.abs(gain))+'</b>';
 }
 
 /* ═════════ 7. 落ち込み ═════════ */
@@ -754,6 +808,7 @@ function calBounds(){
 }
 function drawCal(){
   const head=$('calHead'), grid=$('cal'); if(!grid) return;
+  grid.style.minWidth='';head.style.minWidth='';
   const bd=calBounds(); if(!bd){grid.innerHTML='';head.innerHTML='';$('calLabel').textContent='該当する取引なし';$('calSum').textContent='—';$('calUnitLab').textContent='';$('calPrev').disabled=true;$('calNext').disabled=true;return;}
   if(calY==null){ const d=DAYS[DAYS.length-1].date; calY=d.getFullYear(); calM=d.getMonth(); }
   const cur=calY*12+calM;
@@ -788,14 +843,24 @@ function drawCal(){
           '</div>';
   }
   grid.innerHTML=html;
+  grid.classList.toggle('full-yen',!!unit.full);
+  if(unit.full){
+    // Keep every digit on one line. If seven columns cannot fit, scroll instead of truncating.
+    const measure=document.createElement('canvas').getContext('2d');
+    measure.font='700 11px '+CSS('--sans');
+    const widest=Math.max(0,...[...byDay.values()].map(d=>measure.measureText(calAmt(d.pnl,unit)).width));
+    const minWidth=Math.ceil((widest+12)*7+24);
+    grid.style.minWidth=minWidth+'px';head.style.minWidth=minWidth+'px';
+  }
 
   const sum=[...byDay.values()].reduce((s,d)=>s+d.pnl,0);
   const win=[...byDay.values()].filter(d=>d.pnl>=0).length;
-  $('calSum').innerHTML='<b class="num '+cls(sum)+'">'+money(sum,true)+'</b>';
+  $('calSum').innerHTML='<b class="num '+cls(sum)+'">'+(unit.full?yen(sum,true):money(sum,true))+'</b>';
   $('calUnitLab').textContent = byDay.size? 'マスの数字は'+unit.lab : '';
 }
 function calUnit(mx){
   // 桁が多いとマスからはみ出すので、単位はその月に合わせて決めて、名前はマスの外に出す
+  if(!['main','apex'].includes(CFG.acct)) return {div:1, dec:0, lab:'円',full:true};
   if(CFG.money==='pct') return {div:1, dec:2, lab:'％'};
   if(mx>=1e8) return {div:1e8, dec:2, lab:'億円'};
   if(mx>=1e6) return {div:1e4, dec:0, lab:'万円'};
@@ -804,6 +869,7 @@ function calUnit(mx){
 }
 function calAmt(v,u){
   const sg=v>=0?'+':'−';
+  if(u.full) return sg+nf.format(Math.abs(Math.round(v)));
   if(CFG.money==='pct'){ const d=STAT.dep||1; return sg+(Math.abs(v)/d*100).toFixed(2); }
   const x=Math.abs(v)/u.div;
   return sg+(u.dec? x.toFixed(u.dec) : String(Math.round(x)));   // カンマは入れない（マスに収める）
@@ -1081,7 +1147,7 @@ function syncCfg(){
   $('asOfCaption').textContent=ymd(date)+' までの決済済み取引を表示';
   const hidden=ALL.length-VIEW.length;
   $('status').innerHTML = (ACCT?(ACCT.id==='plan'?'企画口座':ACCT.id==='main'?'メイン口座':ACCT.label):'—')+
-    ' ／ 元本 ¥'+nf.format(STAT.dep)+' → 残高 ¥'+nf.format(STAT.bal)+
+    (ACCT&&ACCT.profitOnly?' ／ 累計利益 '+yen(STAT.net,true)+'円':' ／ 元本 ¥'+nf.format(STAT.dep)+' → 残高 ¥'+nf.format(STAT.bal))+
     (hidden? '<br>この先の '+nf.format(hidden)+'件（'+CFG.asof+'より後）は出していません' : '');
 }
 function applyTab(){
@@ -1219,3 +1285,4 @@ document.addEventListener('DOMContentLoaded',boot);
 </script>
 </body>
 </html>
+
