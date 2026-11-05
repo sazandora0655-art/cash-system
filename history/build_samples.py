@@ -27,7 +27,14 @@ for person_index,p in enumerate(PEOPLE,1):
  bymonth={}
  for day in days:bymonth.setdefault(day.strftime('%Y-%m'),[]).append(day)
  monthkeys=list(bymonth)
- weights=[rng.uniform(.65,1.45)*(1+.45*i/max(1,len(monthkeys)-1)) for i in range(len(monthkeys))]
+ weights=[rng.uniform(.65,1.45)*(1+.45*i/max(1,len(monthkeys)-1))*len(bymonth[k])/22 for i,k in enumerate(monthkeys)]
+ if len(monthkeys)>12:
+  for i in range(len(weights)):
+   if i%8==6:weights[i]*=-.85
+   elif i%7==3:weights[i]*=.12
+ else:
+  weights[2]*=-.35
+  weights[4]*=.18
  if p.get('lastMonth'):
   totals=split(p['total']-p['lastMonth'],weights[:-1])+[p['lastMonth']]
  else:totals=split(p['total'],weights)
