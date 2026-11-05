@@ -554,7 +554,7 @@ const cls=n=>n>0?'pos':n<0?'neg':'flat';
 /* ═════════ 4. サマリー ═════════ */
 function renderHead(){
   const profit=!!ACCT.profitOnly;
-  document.querySelector('header h1').textContent=profit?ACCT.label.replace('（シミュレーション）',''):'取引履歴';
+  document.querySelector('header h1').textContent='取引履歴';
   document.body.classList.toggle('profit-only',profit);
   $('balanceLabel').textContent=profit?'累計利益（シミュレーション）':'残高';
   $('equityTitle').textContent=profit?'累計利益の推移':'資産推移';
@@ -572,7 +572,7 @@ function renderHead(){
   p.className='gpill num '+(g>=0?'up':'dn');
   if(profit){
     $('bal').innerHTML='<span class="cur">+</span>'+nf.format(STAT.net)+'<span class="cur"> 円</span>';
-    $('net').textContent=ACCT.profile+' ／ '+ACCT.period;
+    $('net').textContent='運用期間 '+ACCT.period;
     $('net').className='net';
     if(ACCT.id==='sample-l'||ACCT.id==='sample-41'){
       const ms=months();
